@@ -47,7 +47,7 @@ export default function NationPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px" }}>
       <div style={{ fontSize: 11, color: "var(--text-20)", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Nation Profile</div>
 
-      <NP nations={D.l} sel={sel} onSel={function(n) { setSel(n); setHp(0); }} color="var(--blue)" />
+      <NP nations={D.l.slice().sort(function(a, b) { return a[0].localeCompare(b[0]); })} sel={sel} onSel={function(n) { setSel(n); setHp(0); }} color="var(--blue)" />
 
       <div className="fi" key={sel} style={{
         marginTop: 24, background: "var(--nation-card-bg)", border: "1px solid var(--nation-card-border)",

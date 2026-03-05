@@ -84,6 +84,7 @@ export default function DatabasePage() {
   var [sorts, setSorts] = useState([{ col: "edition", dir: "desc" }]);
   var [subFilter, setSubFilter] = useState("All");
   var [selNations, setSelNations] = useState([]);
+  var [selArtists, setSelArtists] = useState([]);
   var [edFrom, setEdFrom] = useState("");
   var [edTo, setEdTo] = useState("");
 
@@ -115,11 +116,19 @@ export default function DatabasePage() {
     setPg(0);
   };
 
+  var toggleArtist = function(a) {
+    setSelArtists(function(prev) {
+      return prev.indexOf(a) >= 0 ? prev.filter(function(x) { return x !== a; }) : prev.concat([a]);
+    });
+    setPg(0);
+  };
+
   var fl = useMemo(function() {
     if (!d) return [];
     var rows = d;
     if (subFilter !== "All") rows = rows.filter(function(r) { return r.sub === subFilter; });
     if (selNations.length > 0) rows = rows.filter(function(r) { return selNations.indexOf(r.nation) >= 0; });
+    if (selArtists.length > 0) rows = rows.filter(function(r) { return selArtists.indexOf(r.artist) >= 0; });
     if (edFrom) rows = rows.filter(function(r) { return r.edition >= Number(edFrom); });
     if (edTo) rows = rows.filter(function(r) { return r.edition <= Number(edTo); });
     if (qs) rows = rows.filter(function(r) {
@@ -139,7 +148,7 @@ export default function DatabasePage() {
       }
       return 0;
     });
-  }, [d, qs, sorts, subFilter, selNations, edFrom, edTo]);
+  }, [d, qs, sorts, subFilter, selNations, selArtists, edFrom, edTo]);
 
   if (!d) return <Loader t="Loading 18,807 entries..." />;
 
@@ -204,7 +213,7 @@ export default function DatabasePage() {
     var a = document.createElement("a"); a.href = URL.createObjectURL(bl); a.download = "nsc_export.csv"; a.click();
   };
 
-  var hasFilters = subFilter !== "All" || selNations.length > 0 || edFrom || edTo;
+  var hasFilters = subFilter !== "All" || selNations.length > 0 || selArtists.length > 0 || edFrom || edTo;
   var sortDesc = sorts.map(function(s) { return s.col + (s.dir === "asc" ? "\u2191" : "\u2193"); }).join(" \u2192 ");
 
   return (
@@ -222,7 +231,7 @@ export default function DatabasePage() {
       <PL />
 
       {/* Search */}
-      <input type="text" placeholder="Search by artist, song, or nation\u2026" value={q}
+      <input type="text" placeholder="Search by artist, song, or nation…" value={q}
         onChange={function(e) { setQ(e.target.value); setPg(0); }}
         style={{
           width: "100%", padding: "12px 16px", borderRadius: 10, fontSize: 15, fontWeight: 500,
@@ -234,6 +243,7 @@ export default function DatabasePage() {
       {/* Filters row */}
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12, alignItems: "flex-end" }}>
         <MultiSelect items={nations} selected={selNations} onToggle={toggleNation} label="Nations" color="var(--blue)" />
+        <MultiSelect items={artists} selected={selArtists} onToggle={toggleArtist} label="Artists" color="var(--purple)" />
 
         <div>
           <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Edition Range"}</div>
@@ -259,7 +269,7 @@ export default function DatabasePage() {
         </div>
 
         {hasFilters && (
-          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setEdFrom(""); setEdTo(""); setPg(0); }}>
+          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setSelArtists([]); setEdFrom(""); setEdTo(""); setPg(0); }}>
             {"Clear Filters"}
           </button>
         )}

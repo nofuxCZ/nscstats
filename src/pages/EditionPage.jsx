@@ -103,9 +103,9 @@ export default function EditionPage() {
               <div style={{ flex: "1 1 300px" }}>
                 {top6.length >= 2 && (
                   <>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, marginBottom: 8, maxWidth: 320 }}>
                       {top6.filter(r => r[4] <= 3).map(r => (
-                        <div key={r[1]} style={{ textAlign: "center", minWidth: 90 }}>
+                        <div key={r[1]} style={{ textAlign: "center" }}>
                           <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", fontWeight: 700, fontSize: 14, background: mc[r[4] - 1], color: "var(--btn-body)", marginBottom: 4 }}>{r[4]}</div>
                           <div style={{ fontSize: 13, fontWeight: 700, color: mc[r[4] - 1] }}>{r[1]}</div>
                           <div style={{ fontSize: 11, color: "var(--text-40)" }}>{r[5]} pts</div>
@@ -113,9 +113,9 @@ export default function EditionPage() {
                       ))}
                     </div>
                     {top6.filter(r => r[4] >= 4 && r[4] <= 6).length > 0 && (
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, maxWidth: 320 }}>
                         {top6.filter(r => r[4] >= 4 && r[4] <= 6).map(r => (
-                          <div key={r[1]} style={{ textAlign: "center", minWidth: 80 }}>
+                          <div key={r[1]} style={{ textAlign: "center" }}>
                             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: "50%", fontWeight: 700, fontSize: 12, background: "var(--blue-glow-20)", border: "1.5px solid var(--blue-glow-50)", color: "var(--blue)", marginBottom: 3 }}>{r[4]}</div>
                             <div style={{ fontSize: 12, fontWeight: 600, color: "var(--blue)" }}>{r[1]}</div>
                             <div style={{ fontSize: 10, color: "var(--text-30)" }}>{r[5]} pts</div>
@@ -216,7 +216,7 @@ export default function EditionPage() {
                 (isSF && place && place <= 10) ? "var(--blue)" : dnq ? "var(--text-30)" : "var(--text)";
 
               return (
-                <tr key={`${nat}-${i}`}>
+                <tr key={`${nat}-${i}`} style={isSF && place === 11 ? { borderTop: "2px solid var(--blue)" } : undefined}>
                   <td style={{ padding: "8px 10px", textAlign: "center", fontSize: 12, color: "var(--text-25)", background: bg }}>{draw}</td>
                   <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: nc, background: bg }}>
                     {nat}

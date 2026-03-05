@@ -18,13 +18,14 @@ export default function RecordsPage() {
   const [recordType, setRecordType] = useState("gfHighPts");
   const [expanded, setExpanded] = useState(false);
   const [drawSort, setDrawSort] = useState({ col: "draw", dir: "asc" });
+  const [recSort, setRecSort] = useState({ col: null, dir: "asc" });
 
   useEffect(() => {
     Promise.all([loadData("database"), loadData("nations")])
       .then(function(r) { setDb(r[0]); setNat(r[1]); });
   }, []);
 
-  useEffect(function() { setExpanded(false); }, [tab, nationBoard, recordType]);
+  useEffect(function() { setExpanded(false); setRecSort({ col: null, dir: "asc" }); }, [tab, nationBoard, recordType]);
 
   var data = useMemo(function() {
     if (!db || !nat) return null;
@@ -45,7 +46,18 @@ export default function RecordsPage() {
       gfLowWin: sortA(gfP.filter(function(e) { return e.place === 1; }), "points").slice(0, 25),
       sfHighPts: sortD(sfP, "points").slice(0, 50),
       sfLowPts: sortA(sfP, "points").slice(0, 50),
+      sfLowQ: sortA(sfP.filter(function(e) { return e.place && e.place <= 10; }), "points").slice(0, 50),
     };
+    // Compute participants per edition+sub for proportional column
+    var partCount = {};
+    entries.forEach(function(e) {
+      var k = e.edition + "_" + e.sub;
+      partCount[k] = (partCount[k] || 0) + 1;
+    });
+    // Add participant count to each record entry
+    Object.keys(records).forEach(function(key) {
+      records[key].forEach(function(r) { r.participants = partCount[r.edition + "_" + r.sub] || 0; });
+    });
 
     var profiles = Object.values(nat.p);
     var boards = {
@@ -126,11 +138,12 @@ export default function RecordsPage() {
     sfEliminations: { label: "SF Eliminations", val: function(n) { return String(n.sfD || 0); } },
   };
   var recCfg = {
-    gfHighPts: "GF Highest Points",
-    gfLowPts: "GF Lowest Points",
-    gfLowWin: "GF Lowest Winning",
-    sfHighPts: "SF Highest Points",
-    sfLowPts: "SF Lowest Points",
+    gfHighPts: "GF Highest Pts",
+    gfLowPts: "GF Lowest Pts",
+    gfLowWin: "GF Lowest Win",
+    sfHighPts: "SF Highest Pts",
+    sfLowPts: "SF Lowest Pts",
+    sfLowQ: "SF Lowest Qual",
   };
 
   var slice = function(arr) { return expanded ? arr : arr.slice(0, showN); };
@@ -178,29 +191,69 @@ export default function RecordsPage() {
           <div style={{ display: "flex", gap: 4, marginBottom: 16, flexWrap: "wrap" }}>
             {Object.entries(recCfg).map(function(kv) { return <button key={kv[0]} className={"fb " + (recordType === kv[0] ? "on" : "")} onClick={function() { setRecordType(kv[0]); setExpanded(false); }}>{kv[1]}</button>; })}
           </div>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1px", minWidth: 600 }}>
-              <thead><tr>
-                {["#", "Ed.", "Nation", "Artist", "Song", "Points", "Place"].map(function(h, i) {
-                  return <th key={h} style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", textAlign: ["center","left","left","left","left","right","center"][i], borderBottom: "1px solid var(--border-08)" }}>{h}</th>;
-                })}
-              </tr></thead>
-              <tbody>
-                {slice(data.records[recordType]).map(function(r, i) {
-                  return <tr key={String(r.edition) + "-" + String(r.nation) + "-" + i}>
-                    <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{String(r.edition)}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{String(r.nation)}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, color: "var(--text-60)" }}>{String(r.artist || "")}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, fontStyle: "italic", color: "var(--text-45)" }}>{String(r.song || "")}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontWeight: 600, color: i === 0 ? "var(--gold)" : "var(--blue)" }}>{String(r.points != null ? r.points : "")}</td>
-                    <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center" }}>{String(r.place != null ? r.place : "")}</td>
-                  </tr>;
-                })}
-              </tbody>
-            </table>
-          </div>
-          {expandBtn(data.records[recordType].length)}
+          {(() => {
+            var recs = data.records[recordType] || [];
+            // Apply record sort if active
+            if (recSort.col) {
+              recs = recs.slice().sort(function(a, b) {
+                var va = recSort.col === "pctPlace" ? (a.participants > 0 ? a.place / a.participants : 1) : a[recSort.col];
+                var vb = recSort.col === "pctPlace" ? (b.participants > 0 ? b.place / b.participants : 1) : b[recSort.col];
+                if (va == null) return 1; if (vb == null) return -1;
+                return recSort.dir === "asc" ? va - vb : vb - va;
+              });
+            }
+            var shown = expanded ? recs : recs.slice(0, showN);
+            var toggleRecSort = function(col) {
+              setRecSort(function(prev) {
+                if (prev.col === col) return { col: col, dir: prev.dir === "asc" ? "desc" : "asc" };
+                return { col: col, dir: col === "place" || col === "pctPlace" ? "asc" : "desc" };
+              });
+            };
+            var recArr = function(col) { return recSort.col === col ? (recSort.dir === "asc" ? " \u2191" : " \u2193") : ""; };
+            var recTH = function(col, label, align) {
+              return <th onClick={function() { toggleRecSort(col); }} style={{
+                padding: "10px 10px", fontSize: 11, fontWeight: 600,
+                color: recSort.col === col ? "var(--gold)" : "var(--text-30)",
+                textTransform: "uppercase", letterSpacing: "0.8px", textAlign: align || "left",
+                borderBottom: "1px solid var(--border-08)", cursor: "pointer", whiteSpace: "nowrap",
+              }}>{label + recArr(col)}</th>;
+            };
+
+            return <>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1px", minWidth: 700 }}>
+                  <thead><tr>
+                    <th style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", textAlign: "center", borderBottom: "1px solid var(--border-08)" }}>{"#"}</th>
+                    <th style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", borderBottom: "1px solid var(--border-08)" }}>{"Ed."}</th>
+                    <th style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", borderBottom: "1px solid var(--border-08)" }}>{"Nation"}</th>
+                    <th style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", borderBottom: "1px solid var(--border-08)" }}>{"Artist"}</th>
+                    <th style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", borderBottom: "1px solid var(--border-08)" }}>{"Song"}</th>
+                    {recTH("points", "Points", "right")}
+                    {recTH("place", "Place", "center")}
+                    {recTH("participants", "N", "center")}
+                    {recTH("pctPlace", "%Place", "center")}
+                  </tr></thead>
+                  <tbody>
+                    {shown.map(function(r, i) {
+                      var pct = r.participants > 0 ? ((r.place / r.participants) * 100).toFixed(0) : "";
+                      return <tr key={String(r.edition) + "-" + String(r.nation) + "-" + i}>
+                        <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{String(r.edition)}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{String(r.nation)}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, color: "var(--text-60)", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{String(r.artist || "")}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, fontStyle: "italic", color: "var(--text-45)", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{String(r.song || "")}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontWeight: 600, color: i === 0 ? "var(--gold)" : "var(--blue)" }}>{String(r.points != null ? r.points : "")}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center" }}>{String(r.place != null ? r.place : "")}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 12, textAlign: "center", color: "var(--text-30)" }}>{String(r.participants || "")}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 12, textAlign: "center", color: "var(--text-30)" }}>{pct ? pct + "%" : ""}</td>
+                      </tr>;
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {expandBtn(recs.length)}
+            </>;
+          })()}
         </div>
       )}
 
@@ -212,8 +265,8 @@ export default function RecordsPage() {
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1px", minWidth: 500 }}>
               <thead><tr>
-                {["#", "Nation", boardCfg[nationBoard].label, "GF", "Editions"].map(function(h, i) {
-                  return <th key={h} style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", textAlign: ["center","left","right","center","center"][i], borderBottom: "1px solid var(--border-08)" }}>{h}</th>;
+                {["#", "Nation", boardCfg[nationBoard].label, "GF Entries", "Tot. Ed."].map(function(h, i) {
+                  return <th key={h + i} style={{ padding: "10px 10px", fontSize: 11, fontWeight: 600, color: i === 2 ? "var(--gold)" : "var(--text-30)", textTransform: "uppercase", letterSpacing: "0.8px", textAlign: ["center","left","right","center","center"][i], borderBottom: "1px solid var(--border-08)" }}>{h}</th>;
                 })}
               </tr></thead>
               <tbody>
