@@ -66,7 +66,7 @@ def main():
 
     homepage = {
         "s":{"te":max_ed,"tn":len(set(r["Nation"] for r in nsc)),"gf":len(gf),"sf":len(sf),
-            "ue":len(set((r["Edition"],r["Nation"]) for r in nsc)),
+            "ue":len(set((r["Edition"],r.get("Artist",""),r.get("Song","")) for r in nsc)),
             "ua":len(set(r["Artist"] for r in gf if r.get("Artist"))),"us":len(set(r["Song"] for r in gf if r.get("Song"))),
             "hs":gf_sorted[0].get("Points"),"hsn":gf_sorted[0]["Nation"],"hse":gf_sorted[0]["Edition"],
             "lw":latest.get("Nation"),"le":latest.get("Edition"),"la":latest.get("Artist"),"ls":latest.get("Song"),"lp":latest.get("Points")},

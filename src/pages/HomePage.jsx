@@ -31,7 +31,7 @@ export default function HomePage() {
 
       {/* Key Stats Grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 12, marginBottom: 32 }}>
-        {[[s.te, "Editions"], [s.tn, "Nations"], [s.ue || s.gf, "Entries"], [s.ua, "Artists"], [s.us, "Songs"], [s.hs, "Record Pts"]].map(([v, l]) => (
+        {[[s.te, "Editions"], [s.tn, "Nations"], [s.ue || s.gf, "Entries"], [s.ua, "Artists"], [s.hs, "Record Pts"]].map(([v, l]) => (
           <div key={l} style={{
             background: "var(--text-03)", border: "1px solid var(--border)",
             borderRadius: 12, padding: "18px 16px", textAlign: "center",

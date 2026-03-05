@@ -113,7 +113,7 @@ export default function EditionPage() {
                       ))}
                     </div>
                     {top6.filter(r => r[4] >= 4 && r[4] <= 6).length > 0 && (
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, maxWidth: 320 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, maxWidth: 320, marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
                         {top6.filter(r => r[4] >= 4 && r[4] <= 6).map(r => (
                           <div key={r[1]} style={{ textAlign: "center" }}>
                             <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: "50%", fontWeight: 700, fontSize: 12, background: "var(--blue-glow-20)", border: "1.5px solid var(--blue-glow-50)", color: "var(--blue)", marginBottom: 3 }}>{r[4]}</div>
@@ -201,6 +201,8 @@ export default function EditionPage() {
             {td.map((r, i) => {
               const [draw, nat, art, song, place, pts, yt] = r;
               const isSF = ct === "sf1" || ct === "sf2";
+              const prevPlace = i > 0 ? td[i-1][4] : 0;
+              const showDivider = isSF && place > 10 && prevPlace && prevPlace <= 10;
               const isGF = ct === "gf";
               const qf = isSF && gfN.has(nat);
               const isReju = isSF && nat === reju;
@@ -216,7 +218,7 @@ export default function EditionPage() {
                 (isSF && place && place <= 10) ? "var(--blue)" : dnq ? "var(--text-30)" : "var(--text)";
 
               return (
-                <tr key={`${nat}-${i}`} style={isSF && place === 11 ? { borderTop: "2px solid var(--blue)" } : undefined}>
+                <tr key={`${nat}-${i}`} style={showDivider ? { borderTop: "2.5px solid var(--blue)" } : undefined}>
                   <td style={{ padding: "8px 10px", textAlign: "center", fontSize: 12, color: "var(--text-25)", background: bg }}>{draw}</td>
                   <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: nc, background: bg }}>
                     {nat}

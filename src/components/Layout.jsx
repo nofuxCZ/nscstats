@@ -8,6 +8,7 @@ const navItems = [
   { path: '/nations', label: 'Nations' },
   { path: '/records', label: 'Records' },
   { path: '/voting', label: 'Voting' },
+  { path: '/scoreboard', label: 'Scoreboard' },
 ];
 
 export default function Layout({ children }) {

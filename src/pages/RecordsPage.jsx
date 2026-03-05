@@ -19,6 +19,8 @@ export default function RecordsPage() {
   const [expanded, setExpanded] = useState(false);
   const [drawSort, setDrawSort] = useState({ col: "draw", dir: "asc" });
   const [recSort, setRecSort] = useState({ col: null, dir: "asc" });
+  const [recEdFrom, setRecEdFrom] = useState("");
+  const [recEdTo, setRecEdTo] = useState("");
 
   useEffect(() => {
     Promise.all([loadData("database"), loadData("nations")])
@@ -32,6 +34,12 @@ export default function RecordsPage() {
     var entries = db.map(function(r) {
       return { edition: r[0], sub: r[1], draw: r[2], nation: r[3], artist: r[4], song: r[5], place: r[6], points: r[7] };
     });
+    // Apply edition range filter
+    var efrom = recEdFrom ? Number(recEdFrom) : 0;
+    var eto = recEdTo ? Number(recEdTo) : 99999;
+    if (efrom > 0 || eto < 99999) {
+      entries = entries.filter(function(e) { return e.edition >= efrom && e.edition <= eto; });
+    }
     var gf = entries.filter(function(e) { return e.sub === 0; });
     var sf = entries.filter(function(e) { return e.sub === 1 || e.sub === 2; });
     var gfP = gf.filter(function(e) { return e.points != null && e.place != null; });
@@ -115,7 +123,7 @@ export default function RecordsPage() {
     var drawSF = Object.values(sfDraw);
 
     return { records: records, boards: boards, qualRates: qualRates, artists: artists, drawGF: drawGF, drawSF: drawSF };
-  }, [db, nat]);
+  }, [db, nat, recEdFrom, recEdTo]);
 
   if (!data) return <Loader t="Loading records..." />;
 
@@ -180,7 +188,25 @@ export default function RecordsPage() {
       <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,4vw,34px)", fontWeight: 900, background: "var(--grad-title)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4 }}>
         {"Records & Statistics"}
       </h1>
-      <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 16 }}>{"All-time records, leaderboards, and analysis"}</p>
+      <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 12 }}>{"All-time records, leaderboards, and analysis"}</p>
+
+      {/* Edition range filter */}
+      <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1 }}>{"Edition Range"}</span>
+        <input type="number" placeholder="from" value={recEdFrom}
+          onChange={function(e) { setRecEdFrom(e.target.value); }}
+          style={{ width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+        <span style={{ color: "var(--text-15)" }}>{"to"}</span>
+        <input type="number" placeholder="to" value={recEdTo}
+          onChange={function(e) { setRecEdTo(e.target.value); }}
+          style={{ width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+        {(recEdFrom || recEdTo) && (
+          <button className="xb" onClick={function() { setRecEdFrom(""); setRecEdTo(""); }}>{"Clear"}</button>
+        )}
+        {(recEdFrom || recEdTo) && (
+          <span style={{ fontSize: 12, color: "var(--gold)" }}>{"Showing editions " + (recEdFrom || "1") + "\u2013" + (recEdTo || "latest")}</span>
+        )}
+      </div>
 
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 24, overflowX: "auto" }}>
         {TABS.map(function(t) { return <button key={t.k} className={"tt " + (tab === t.k ? "on" : "")} onClick={function() { setTab(t.k); }}>{t.l}</button>; })}
@@ -196,10 +222,15 @@ export default function RecordsPage() {
             // Apply record sort if active
             if (recSort.col) {
               recs = recs.slice().sort(function(a, b) {
-                var va = recSort.col === "pctPlace" ? (a.participants > 0 ? a.place / a.participants : 1) : a[recSort.col];
-                var vb = recSort.col === "pctPlace" ? (b.participants > 0 ? b.place / b.participants : 1) : b[recSort.col];
+                var va, vb;
+                var c = recSort.col;
+                if (c === "pctPlace") { va = a.participants > 0 ? a.place / a.participants : 1; vb = b.participants > 0 ? b.place / b.participants : 1; }
+                else { va = a[c]; vb = b[c]; }
                 if (va == null) return 1; if (vb == null) return -1;
-                return recSort.dir === "asc" ? va - vb : vb - va;
+                var cmp = recSort.dir === "asc" ? va - vb : vb - va;
+                // Tiebreak by points (desc for high, asc for low)
+                if (cmp === 0 && a.points != null && b.points != null) return b.points - a.points;
+                return cmp;
               });
             }
             var shown = expanded ? recs : recs.slice(0, showN);
@@ -231,11 +262,11 @@ export default function RecordsPage() {
                     {recTH("points", "Points", "right")}
                     {recTH("place", "Place", "center")}
                     {recTH("participants", "N", "center")}
-                    {recTH("pctPlace", "%Place", "center")}
+                    {recTH("pctPlace", "Rel%", "center")}
                   </tr></thead>
                   <tbody>
                     {shown.map(function(r, i) {
-                      var pct = r.participants > 0 ? ((r.place / r.participants) * 100).toFixed(0) : "";
+                      var pct = r.participants > 0 ? ((r.place / r.participants) * 100).toFixed(1) : "";
                       return <tr key={String(r.edition) + "-" + String(r.nation) + "-" + i}>
                         <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
                         <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{String(r.edition)}</td>

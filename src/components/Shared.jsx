@@ -158,11 +158,11 @@ export function NP({ nations, sel, onSel, label, color = "var(--blue)" }) {
           boxShadow: "var(--dropdown-shadow)",
         }}>
           {sel && (
-            <div onClick={() => { onSel(null); setOpen(false); }}
+            <div onClick={() => { onSel(null); setQ(""); }}
               style={{ padding: "8px 14px", fontSize: 12, color: "var(--text-30)", cursor: "pointer", borderBottom: "1px solid var(--border)" }}
               onMouseEnter={e => e.target.style.background = "var(--hover-bg)"}
               onMouseLeave={e => e.target.style.background = "transparent"}
-            >Clear</div>
+            >Clear selection</div>
           )}
           {fl.map(n => {
             const name = getName(n);
