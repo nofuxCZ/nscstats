@@ -10,6 +10,8 @@ export default function DatabasePage() {
   const [sd, setSd] = useState("desc");
   const [subFilter, setSubFilter] = useState("All");
   const [nationFilter, setNationFilter] = useState("");
+  const [edFrom, setEdFrom] = useState("");
+  const [edTo, setEdTo] = useState("");
 
   useEffect(() => {
     loadData("database").then(r => {
@@ -33,6 +35,8 @@ export default function DatabasePage() {
     let rows = d;
     if (subFilter !== "All") rows = rows.filter(r => r.sub === subFilter);
     if (nationFilter) rows = rows.filter(r => r.nation === nationFilter);
+    if (edFrom) rows = rows.filter(r => r.edition >= Number(edFrom));
+    if (edTo) rows = rows.filter(r => r.edition <= Number(edTo));
     if (qs) rows = rows.filter(r =>
       r.artist.toLowerCase().includes(qs) ||
       r.song.toLowerCase().includes(qs) ||
@@ -45,7 +49,7 @@ export default function DatabasePage() {
       if (typeof va === "string") { va = va.toLowerCase(); vb = (vb || "").toLowerCase(); }
       return sd === "asc" ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
     });
-  }, [d, qs, sc, sd, subFilter, nationFilter]);
+  }, [d, qs, sc, sd, subFilter, nationFilter, edFrom, edTo]);
 
   if (!d) return <Loader t="Loading 18,807 entries…" />;
 
@@ -97,19 +101,16 @@ export default function DatabasePage() {
         background: "var(--grad-title)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         marginBottom: 4,
       }}>NSC Database</h1>
-      <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 8 }}>
+      <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 4 }}>
         {d.length.toLocaleString()} entries · All editions
+      </p>
+      <p style={{ fontSize: 12, color: "var(--text-20)", marginBottom: 8 }}>
+        Click column header to sort
       </p>
       <PL />
 
       {/* Filters */}
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14, marginBottom: 8, alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 4 }}>
-          {["All", "GF", "SF1", "SF2", "MPQ"].map(s => (
-            <button key={s} className={`fb ${subFilter === s ? "on" : ""}`}
-              onClick={() => { setSubFilter(s); setPg(0); }}>{s}</button>
-          ))}
-        </div>
         <select
           value={nationFilter}
           onChange={e => { setNationFilter(e.target.value); setPg(0); }}
@@ -125,8 +126,27 @@ export default function DatabasePage() {
           <option value="">All Nations</option>
           {nations.map(n => <option key={n} value={n}>{n}</option>)}
         </select>
-        {(subFilter !== "All" || nationFilter) && (
-          <button className="xb" onClick={() => { setSubFilter("All"); setNationFilter(""); setPg(0); }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 11, color: "var(--text-30)" }}>Editions</span>
+          <input type="number" placeholder="from" value={edFrom}
+            onChange={e => { setEdFrom(e.target.value); setPg(0); }}
+            style={{ width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+          <span style={{ color: "var(--text-15)" }}>to</span>
+          <input type="number" placeholder="to" value={edTo}
+            onChange={e => { setEdTo(e.target.value); setPg(0); }}
+            style={{ width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+        </div>
+
+        <div style={{ display: "flex", gap: 4 }}>
+          {["All", "GF", "SF1", "SF2", "MPQ"].map(s => (
+            <button key={s} className={`fb ${subFilter === s ? "on" : ""}`}
+              onClick={() => { setSubFilter(s); setPg(0); }}>{s}</button>
+          ))}
+        </div>
+
+        {(subFilter !== "All" || nationFilter || edFrom || edTo) && (
+          <button className="xb" onClick={() => { setSubFilter("All"); setNationFilter(""); setEdFrom(""); setEdTo(""); setPg(0); }}>
             Clear Filters
           </button>
         )}

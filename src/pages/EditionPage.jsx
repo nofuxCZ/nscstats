@@ -89,6 +89,45 @@ export default function EditionPage() {
           borderRadius: 20, padding: "4px 14px", fontSize: 14, fontWeight: 700, color: "var(--gold)",
         }}>🏆 {m.wp} pts</div>
 
+        {/* Winner YouTube embed */}
+        {(() => {
+          const winner = (e.gf || []).find(r => r[4] === 1);
+          const yt = winner && winner[6];
+          if (!yt) return null;
+          const vid = yt.startsWith("http") ? new URL(yt).searchParams.get("v") || yt.split("/").pop() : yt;
+          return (
+            <div style={{ marginTop: 16, borderRadius: 12, overflow: "hidden", maxWidth: 480, aspectRatio: "16/9" }}>
+              <iframe
+                width="100%" height="100%"
+                src={`https://www.youtube.com/embed/${vid}`}
+                title="Winning entry"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ border: 0, borderRadius: 12 }}
+              />
+            </div>
+          );
+        })()}
+
+        {/* Top 3 Podium */}
+        {(() => {
+          const top3 = (e.gf || []).filter(r => r[4] && r[4] <= 3).sort((a, b) => a[4] - b[4]);
+          if (top3.length < 2) return null;
+          const mc = ["var(--gold)", "var(--silver)", "var(--bronze)"];
+          return (
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+              {top3.map(r => (
+                <div key={r[1]} style={{ textAlign: "center", flex: "0 0 auto", minWidth: 100 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", fontWeight: 700, fontSize: 14, background: mc[r[4] - 1], color: "var(--btn-body)", marginBottom: 4 }}>{r[4]}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: mc[r[4] - 1] }}>{r[1]}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-40)" }}>{r[5]} pts</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
         {facts.length > 0 && (
           <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
             {facts.map((f, i) => (
