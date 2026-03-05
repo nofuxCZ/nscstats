@@ -8,6 +8,8 @@ export default function DatabasePage() {
   const [pg, setPg] = useState(0);
   const [sc, setSc] = useState("edition");
   const [sd, setSd] = useState("desc");
+  const [subFilter, setSubFilter] = useState("All");
+  const [nationFilter, setNationFilter] = useState("");
 
   useEffect(() => {
     loadData("database").then(r => {
@@ -21,9 +23,16 @@ export default function DatabasePage() {
   const PS = 50;
   const qs = q.toLowerCase().trim();
 
+  const nations = useMemo(() => {
+    if (!d) return [];
+    return [...new Set(d.map(r => r.nation))].sort();
+  }, [d]);
+
   const fl = useMemo(() => {
     if (!d) return [];
     let rows = d;
+    if (subFilter !== "All") rows = rows.filter(r => r.sub === subFilter);
+    if (nationFilter) rows = rows.filter(r => r.nation === nationFilter);
     if (qs) rows = rows.filter(r =>
       r.artist.toLowerCase().includes(qs) ||
       r.song.toLowerCase().includes(qs) ||
@@ -36,7 +45,7 @@ export default function DatabasePage() {
       if (typeof va === "string") { va = va.toLowerCase(); vb = (vb || "").toLowerCase(); }
       return sd === "asc" ? (va < vb ? -1 : va > vb ? 1 : 0) : (va > vb ? -1 : va < vb ? 1 : 0);
     });
-  }, [d, qs, sc, sd]);
+  }, [d, qs, sc, sd, subFilter, nationFilter]);
 
   if (!d) return <Loader t="Loading 18,807 entries…" />;
 
@@ -92,6 +101,37 @@ export default function DatabasePage() {
         {d.length.toLocaleString()} entries · All editions
       </p>
       <PL />
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14, marginBottom: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["All", "GF", "SF1", "SF2", "MPQ"].map(s => (
+            <button key={s} className={`fb ${subFilter === s ? "on" : ""}`}
+              onClick={() => { setSubFilter(s); setPg(0); }}>{s}</button>
+          ))}
+        </div>
+        <select
+          value={nationFilter}
+          onChange={e => { setNationFilter(e.target.value); setPg(0); }}
+          style={{
+            padding: "6px 28px 6px 10px", borderRadius: 6, fontSize: 13, fontWeight: 600,
+            background: "var(--input-bg)", border: "1px solid var(--border-08)",
+            color: nationFilter ? "var(--blue)" : "var(--text-45)", cursor: "pointer",
+            appearance: "none",
+            backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "no-repeat", backgroundPosition: "right 8px center",
+          }}
+        >
+          <option value="">All Nations</option>
+          {nations.map(n => <option key={n} value={n}>{n}</option>)}
+        </select>
+        {(subFilter !== "All" || nationFilter) && (
+          <button className="xb" onClick={() => { setSubFilter("All"); setNationFilter(""); setPg(0); }}>
+            Clear Filters
+          </button>
+        )}
+      </div>
+
       <input type="text" placeholder="Search by artist, song, or nation…" value={q}
         onChange={e => { setQ(e.target.value); setPg(0); }}
         style={{

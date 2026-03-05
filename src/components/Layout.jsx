@@ -6,6 +6,7 @@ const navItems = [
   { path: '/database', label: 'Database' },
   { path: '/editions', label: 'Editions' },
   { path: '/nations', label: 'Nations' },
+  { path: '/records', label: 'Records' },
   { path: '/voting', label: 'Voting' },
 ];
 

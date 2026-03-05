@@ -166,8 +166,7 @@ def main():
             "bs":bs,"ta":ta[0],"tac":ta[1],"h":hist}
 
     sn_list=sorted(profiles.keys(), key=lambda n:-profiles[n]["gf"])
-    for i,n in enumerate(sn_list):
-        if i>=40: profiles[n]["h"]=profiles[n]["h"][-10:]
+    # Keep full history for ALL nations (no truncation)
     nation_list=[[n,profiles[n]["gf"],profiles[n]["w"]] for n in sn_list]
 
     with open(os.path.join(args.output, "nations.json"), "w", encoding="utf-8") as f:
