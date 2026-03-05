@@ -84,10 +84,14 @@ export default function RecordsPage() {
     var qualRates = profiles.filter(function(p) { return p.sf >= 5 && p.qr != null; }).sort(function(a, b) { return b.qr - a.qr; });
 
     var ac = {};
+    var seenEdArt = {};
     entries.forEach(function(e) {
       if (!e.artist) return;
-      if (!ac[e.artist]) ac[e.artist] = { name: e.artist, count: 0, ns: {}, gfc: 0, bp: 999 };
-      var a = ac[e.artist]; a.count++; a.ns[e.nation] = 1;
+      if (!ac[e.artist]) ac[e.artist] = { name: e.artist, count: 0, ns: {}, gfc: 0, bp: 999, edSeen: {} };
+      var a = ac[e.artist]; a.ns[e.nation] = 1;
+      // Count each edition only once for the entry count
+      if (!a.edSeen[e.edition]) { a.edSeen[e.edition] = 1; a.count++; }
+      // But always track GF stats (an artist appears in GF at most once per edition)
       if (e.sub === 0) { a.gfc++; if (e.place && e.place < a.bp) a.bp = e.place; }
     });
     var artists = Object.values(ac).map(function(a) {

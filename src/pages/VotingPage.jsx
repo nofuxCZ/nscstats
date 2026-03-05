@@ -107,14 +107,16 @@ export default function VotingPage() {
     let ts = 0, cnt = 0;
     for (const ed of AE) {
       if (ed < edFrom || ed > edTo) continue;
+      let edScore = 0, edFound = 0;
       for (const cat of [0, 1]) {
         const m1 = RM.get(ed + "_" + cat + "_" + v1);
         const m2 = RM.get(ed + "_" + cat + "_" + v2);
         if (!m1 || !m2) continue;
         let sc = 0;
         for (const [ni, p1] of m1) { const p2 = m2.get(ni); if (p2) sc += p1 * p2; }
-        ts += sc / MAX; cnt++;
+        edScore += sc / MAX; edFound++;
       }
+      if (edFound > 0) { ts += edScore / edFound; cnt++; }
     }
     return cnt >= minEd ? { s: Math.round((ts / cnt) * 1000) / 10, n: cnt } : null;
   }, [AE, RM, edFrom, edTo, minEd]);
@@ -141,7 +143,7 @@ export default function VotingPage() {
     setComputing(true);
     setTimeout(() => {
       const active = new Map();
-      for (const ed of AE) { if (ed < edFrom || ed > edTo) continue; for (const cat of [0, 1]) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) active.set(vi, (active.get(vi) || 0) + 1); } }
+      for (const ed of AE) { if (ed < edFrom || ed > edTo) continue; var edVoters = new Set(); for (const cat of [0, 1]) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) edVoters.add(vi); } for (const vi of edVoters) active.set(vi, (active.get(vi) || 0) + 1); }
       const avs = [...active.entries()].filter(([, c]) => c >= minEd).map(([vi]) => vi).sort((a, b) => a - b);
       const pairs = [];
       for (let i = 0; i < avs.length; i++) for (let j = i + 1; j < avs.length; j++) { const r = csim(avs[i], avs[j]); if (r) pairs.push({ a: avs[i], b: avs[j], ...r }); }

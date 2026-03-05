@@ -144,7 +144,15 @@ def main():
         for ie in range(len(gf_eds)):
             cs=cs+1 if ie==0 or gf_eds[ie]==gf_eds[ie-1]+1 else 1
             bs=max(bs,cs)
-        ac=Counter(r.get("Artist","") for r in n_all if r.get("Artist"))
+        ac=Counter()
+        seen_ed_art=set()
+        for r in n_all:
+            a=r.get("Artist","")
+            if not a: continue
+            ek=(r["Edition"],a)
+            if ek not in seen_ed_art:
+                seen_ed_art.add(ek)
+                ac[a]+=1
         ta=ac.most_common(1)[0] if ac else (None,0)
         we=[r["Edition"] for r in n_gf if r.get("Place")==1]
         ed_map=defaultdict(dict)

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { loadData } from '../data/loader';
 import { Loader, NP, Pg } from '../components/Shared';
 
@@ -50,6 +51,13 @@ export default function NationPage() {
     return h.slice().reverse().slice(hp * PS, (hp + 1) * PS);
   }, [h, hp]);
 
+  var chartData = useMemo(function() {
+    if (!h || h.length === 0) return [];
+    return h.map(function(r) {
+      return { ed: r[0], gfP: r[4] || null, isWin: r[4] === 1, isPod: r[4] && r[4] <= 3, isPq: r[4] && r[4] >= 4 && r[4] <= 6 };
+    }).filter(function(d) { return d.gfP != null; });
+  }, [h]);
+
   // NOW we can do conditional returns
   if (!D) return <Loader />;
 
@@ -93,6 +101,31 @@ export default function NationPage() {
               </div>
             )}
           </div>
+
+          {chartData.length > 2 && (
+            <div style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-60)", marginBottom: 6 }}>
+                {"Grand Final Placement History "}
+                <span style={{ fontWeight: 400, fontSize: 12, color: "var(--text-30)" }}>{"(lower is better)"}</span>
+              </div>
+              <div style={{ background: "var(--card-dark)", borderRadius: 12, padding: "16px 8px 8px 0" }}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 4, left: 4 }}>
+                    <XAxis dataKey="ed" tick={{ fill: "var(--text-25)", fontSize: 10 }} axisLine={{ stroke: "var(--border-08)" }} tickLine={false} label={{ value: "Edition", position: "insideBottom", offset: -2, fill: "var(--text-20)", fontSize: 11 }} />
+                    <YAxis reversed domain={[1, "auto"]} tick={{ fill: "var(--text-25)", fontSize: 10 }} axisLine={{ stroke: "var(--border-08)" }} tickLine={false} width={30} />
+                    <Tooltip contentStyle={{ background: "var(--dropdown-bg)", border: "1px solid var(--border-10)", borderRadius: 8, fontSize: 13, color: "var(--text)" }} labelFormatter={function(v) { return "Edition " + v; }} formatter={function(v) { return [v, "GF Place"]; }} />
+                    <ReferenceLine y={6} stroke="var(--blue-glow-50)" strokeDasharray="4 4" strokeWidth={1} />
+                    <Line type="monotone" dataKey="gfP" stroke="var(--gold)" strokeWidth={1.5} dot={function(props) {
+                      var d = props.payload;
+                      var fill = d.isWin ? "var(--gold)" : d.isPod ? "var(--silver)" : d.isPq ? "var(--blue)" : "var(--text-30)";
+                      var r = d.isWin ? 4 : d.isPod ? 3.5 : d.isPq ? 3 : 2;
+                      return <circle cx={props.cx} cy={props.cy} r={r} fill={fill} stroke="none" />;
+                    }} activeDot={{ r: 5, fill: "var(--gold)" }} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
 
           {h.length > 0 && (
             <div style={{ marginTop: 24 }}>
