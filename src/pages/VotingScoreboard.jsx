@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
 import { Loader } from '../components/Shared';
 
-var SUB_NAMES = ["GF + Wildcard", "SF + REJU"];
+var SUB_NAMES = ["GF + WL Jury", "SF + REJU"];
 
 export default function VotingScoreboard() {
   var [D, setD] = useState(null);
