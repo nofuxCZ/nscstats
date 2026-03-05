@@ -204,7 +204,7 @@ export default function RecordsPage() {
           <button className="xb" onClick={function() { setRecEdFrom(""); setRecEdTo(""); }}>{"Clear"}</button>
         )}
         {(recEdFrom || recEdTo) && (
-          <span style={{ fontSize: 12, color: "var(--gold)" }}>{"Showing editions " + (recEdFrom || "1") + "\u2013" + (recEdTo || "latest")}</span>
+          <span style={{ fontSize: 12, color: "var(--gold)" }}>{"Showing editions " + (recEdFrom || "1") + "\u2013" + (recEdTo || "latest") + " (applies to Records, Draw Stats, Artists)"}</span>
         )}
       </div>
 
@@ -224,7 +224,7 @@ export default function RecordsPage() {
               recs = recs.slice().sort(function(a, b) {
                 var va, vb;
                 var c = recSort.col;
-                if (c === "pctPlace") { va = a.participants > 0 ? a.place / a.participants : 1; vb = b.participants > 0 ? b.place / b.participants : 1; }
+                if (c === "pctPlace") { va = a.participants > 0 ? a.points / a.participants : 0; vb = b.participants > 0 ? b.points / b.participants : 0; }
                 else { va = a[c]; vb = b[c]; }
                 if (va == null) return 1; if (vb == null) return -1;
                 var cmp = recSort.dir === "asc" ? va - vb : vb - va;
@@ -237,7 +237,7 @@ export default function RecordsPage() {
             var toggleRecSort = function(col) {
               setRecSort(function(prev) {
                 if (prev.col === col) return { col: col, dir: prev.dir === "asc" ? "desc" : "asc" };
-                return { col: col, dir: col === "place" || col === "pctPlace" ? "asc" : "desc" };
+                return { col: col, dir: col === "place" ? "asc" : "desc" };
               });
             };
             var recArr = function(col) { return recSort.col === col ? (recSort.dir === "asc" ? " \u2191" : " \u2193") : ""; };
@@ -262,11 +262,11 @@ export default function RecordsPage() {
                     {recTH("points", "Points", "right")}
                     {recTH("place", "Place", "center")}
                     {recTH("participants", "N", "center")}
-                    {recTH("pctPlace", "Rel%", "center")}
+                    {recTH("pctPlace", "Pts/N", "center")}
                   </tr></thead>
                   <tbody>
                     {shown.map(function(r, i) {
-                      var pct = r.participants > 0 ? ((r.place / r.participants) * 100).toFixed(1) : "";
+                      var avg = r.participants > 0 ? (r.points / r.participants).toFixed(1) : "";
                       return <tr key={String(r.edition) + "-" + String(r.nation) + "-" + i}>
                         <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
                         <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--text)" }}>{String(r.edition)}</td>
@@ -276,7 +276,7 @@ export default function RecordsPage() {
                         <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "right", fontWeight: 600, color: i === 0 ? "var(--gold)" : "var(--blue)" }}>{String(r.points != null ? r.points : "")}</td>
                         <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center" }}>{String(r.place != null ? r.place : "")}</td>
                         <td style={{ padding: "8px 10px", fontSize: 12, textAlign: "center", color: "var(--text-30)" }}>{String(r.participants || "")}</td>
-                        <td style={{ padding: "8px 10px", fontSize: 12, textAlign: "center", color: "var(--text-30)" }}>{pct ? pct + "%" : ""}</td>
+                        <td style={{ padding: "8px 10px", fontSize: 12, textAlign: "center", color: "var(--text-30)" }}>{avg || ""}</td>
                       </tr>;
                     })}
                   </tbody>

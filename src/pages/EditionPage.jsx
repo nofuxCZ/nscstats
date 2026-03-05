@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
 import { Loader, SC, PL, YtLink } from '../components/Shared';
 
@@ -77,61 +77,49 @@ export default function EditionPage() {
         <div style={{ fontSize: 11, fontWeight: 600, color: "var(--gold)", letterSpacing: 3, textTransform: "uppercase", marginBottom: 8 }}>
           Nation Song Contest #{ed}
         </div>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(22px,3.5vw,32px)", fontWeight: 900, color: "var(--text)" }}>
-          {m.w || "—"}
+        
+        {/* Winner info + YT side by side */}
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+          <div style={{ flex: "1 1 250px" }}>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(22px,3.5vw,32px)", fontWeight: 900, color: "var(--text)" }}>
+              {m.w || "—"}
+            </div>
+            <div style={{ fontSize: 15, color: "var(--text-60)", marginTop: 4 }}>
+              {m.wa} — <em>"{m.ws}"</em>
+            </div>
+            <div style={{
+              marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6,
+              background: "var(--gold-glow-12)", border: "1px solid var(--gold-glow-25)",
+              borderRadius: 20, padding: "4px 14px", fontSize: 14, fontWeight: 700, color: "var(--gold)",
+            }}>🏆 {m.wp} pts</div>
+          </div>
+          {(() => {
+            const winner = (e.gf || []).find(r => r[4] === 1);
+            const yt = winner && winner[6];
+            if (!yt) return null;
+            const vid = yt.startsWith("http") ? (() => { try { return new URL(yt).searchParams.get("v") || yt.split("/").pop(); } catch(x) { return yt; } })() : yt;
+            return (
+              <div style={{ flex: "0 0 auto", width: "min(100%, 340px)", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
+                <iframe width="100%" height="100%" src={"https://www.youtube.com/embed/" + vid} title="Winning entry" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 0 }} />
+              </div>
+            );
+          })()}
         </div>
-        <div style={{ fontSize: 15, color: "var(--text-60)", marginTop: 4 }}>
-          {m.wa} — <em>"{m.ws}"</em>
-        </div>
-        <div style={{
-          marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6,
-          background: "var(--gold-glow-12)", border: "1px solid var(--gold-glow-25)",
-          borderRadius: 20, padding: "4px 14px", fontSize: 14, fontWeight: 700, color: "var(--gold)",
-        }}>🏆 {m.wp} pts</div>
 
-        {/* Top results + YouTube side by side */}
+        {/* Top 6 in one row */}
         {(() => {
           const top6 = (e.gf || []).filter(r => r[4] && r[4] <= 6).sort((a, b) => a[4] - b[4]);
-          const winner = (e.gf || []).find(r => r[4] === 1);
-          const yt = winner && winner[6];
-          const vid = yt ? (yt.startsWith("http") ? (() => { try { return new URL(yt).searchParams.get("v") || yt.split("/").pop(); } catch(e) { return yt; } })() : yt) : null;
+          if (top6.length < 2) return null;
           const mc = ["var(--gold)", "var(--silver)", "var(--bronze)", "var(--blue)", "var(--blue)", "var(--blue)"];
-
           return (
-            <div style={{ display: "flex", gap: 24, marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)", flexWrap: "wrap" }}>
-              {/* Left: Top 3 + PQ 4-6 */}
-              <div style={{ flex: "1 1 300px" }}>
-                {top6.length >= 2 && (
-                  <>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, marginBottom: 8, maxWidth: 320 }}>
-                      {top6.filter(r => r[4] <= 3).map(r => (
-                        <div key={r[1]} style={{ textAlign: "center" }}>
-                          <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: "50%", fontWeight: 700, fontSize: 14, background: mc[r[4] - 1], color: "var(--btn-body)", marginBottom: 4 }}>{r[4]}</div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: mc[r[4] - 1] }}>{r[1]}</div>
-                          <div style={{ fontSize: 11, color: "var(--text-40)" }}>{r[5]} pts</div>
-                        </div>
-                      ))}
-                    </div>
-                    {top6.filter(r => r[4] >= 4 && r[4] <= 6).length > 0 && (
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4, maxWidth: 320, marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
-                        {top6.filter(r => r[4] >= 4 && r[4] <= 6).map(r => (
-                          <div key={r[1]} style={{ textAlign: "center" }}>
-                            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: "50%", fontWeight: 700, fontSize: 12, background: "var(--blue-glow-20)", border: "1.5px solid var(--blue-glow-50)", color: "var(--blue)", marginBottom: 3 }}>{r[4]}</div>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--blue)" }}>{r[1]}</div>
-                            <div style={{ fontSize: 10, color: "var(--text-30)" }}>{r[5]} pts</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-              {/* Right: YouTube */}
-              {vid && (
-                <div style={{ flex: "0 0 auto", width: "min(100%, 380px)", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
-                  <iframe width="100%" height="100%" src={"https://www.youtube.com/embed/" + vid} title="Winning entry" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 0 }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 4, marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border)", maxWidth: 600 }}>
+              {top6.map(r => (
+                <div key={r[1]} style={{ textAlign: "center" }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: r[4] <= 3 ? 32 : 26, height: r[4] <= 3 ? 32 : 26, borderRadius: "50%", fontWeight: 700, fontSize: r[4] <= 3 ? 14 : 12, background: r[4] <= 3 ? mc[r[4]-1] : "var(--blue-glow-20)", border: r[4] > 3 ? "1.5px solid var(--blue-glow-50)" : "none", color: r[4] <= 3 ? "var(--btn-body)" : "var(--blue)", marginBottom: 4 }}>{r[4]}</div>
+                  <div style={{ fontSize: r[4] <= 3 ? 13 : 12, fontWeight: r[4] <= 3 ? 700 : 600, color: mc[r[4]-1] }}>{r[1]}</div>
+                  <div style={{ fontSize: 10, color: "var(--text-40)" }}>{r[5]} pts</div>
                 </div>
-              )}
+              ))}
             </div>
           );
         })()}
@@ -217,8 +205,11 @@ export default function EditionPage() {
               const nc = isWin ? "var(--gold)" : isReju ? "var(--purple)" :
                 (isSF && place && place <= 10) ? "var(--blue)" : dnq ? "var(--text-30)" : "var(--text)";
 
-              return (
-                <tr key={`${nat}-${i}`} style={showDivider ? { borderTop: "2.5px solid var(--blue)" } : undefined}>
+              return (<React.Fragment key={`row-${nat}-${i}`}>
+                {showDivider && (
+                  <tr><td colSpan={7} style={{ padding: 0, height: 3, background: "var(--blue)" }}></td></tr>
+                )}
+                <tr>
                   <td style={{ padding: "8px 10px", textAlign: "center", fontSize: 12, color: "var(--text-25)", background: bg }}>{draw}</td>
                   <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: nc, background: bg }}>
                     {nat}
@@ -242,7 +233,7 @@ export default function EditionPage() {
                     {pts || "—"}
                   </td>
                 </tr>
-              );
+              </React.Fragment>);
             })}
           </tbody>
         </table>

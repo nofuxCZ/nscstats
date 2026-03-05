@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
 import { Loader } from '../components/Shared';
 
-var SUB_NAMES = ["GF", "SF1", "SF2"];
+var SUB_NAMES = ["GF + Wildcard", "SF + REJU"];
 
 export default function VotingScoreboard() {
   var [D, setD] = useState(null);
@@ -64,29 +64,32 @@ export default function VotingScoreboard() {
     return { contestants: cList, voters: vList, pts: pts, totals: recipientTotals };
   }, [D, ed, sub]);
 
+  var [selCat, setSelCat] = useState(-1); // -1 = all, 0 = GF, 1 = SF
+
   // Build nation-by-edition breakdown
   var breakdown = useMemo(function() {
     if (!D || selNation == null) return null;
-    // Points RECEIVED by selNation from each voter, by edition
-    var received = {}; // { edition: { voterIdx: points } }
-    var given = {}; // { edition: { recipientIdx: points } }
+    var received = {};
+    var given = {};
     D.r.forEach(function(r) {
       var redition = r[0], rcat = r[1], vi = r[2], pairs = r[3];
+      if (selCat >= 0 && rcat !== selCat) return;
       for (var i = 0; i < pairs.length; i += 2) {
-        if (pairs[i] === selNation) {
-          // selNation received points from vi in this edition
+        var ri = pairs[i];
+        // Skip self-votes
+        if (ri === vi) continue;
+        if (ri === selNation && vi !== selNation) {
           if (!received[redition]) received[redition] = {};
           received[redition][vi] = (received[redition][vi] || 0) + pairs[i + 1];
         }
-        if (vi === selNation) {
-          // selNation gave points to pairs[i]
+        if (vi === selNation && ri !== selNation) {
           if (!given[redition]) given[redition] = {};
-          given[redition][pairs[i]] = (given[redition][pairs[i]] || 0) + pairs[i + 1];
+          given[redition][ri] = (given[redition][ri] || 0) + pairs[i + 1];
         }
       }
     });
     return { received: received, given: given };
-  }, [D, selNation]);
+  }, [D, selNation, selCat]);
 
   if (!D) return <Loader t="Loading voting data..." />;
 
@@ -177,15 +180,25 @@ export default function VotingScoreboard() {
       {/* POINTS RECEIVED / GIVEN */}
       {(view === "received" || view === "given") && (
         <div className="fi">
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Select Nation"}</div>
-            <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); }}
-              style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--blue)", cursor: "pointer", minWidth: 200 }}>
-              <option value="">{"Choose..."}</option>
-              {nn.slice().map(function(n, i) { return [n, i]; }).sort(function(a, b) { return a[0].localeCompare(b[0]); }).map(function(pair) {
-                return <option key={pair[1]} value={pair[1]} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{pair[0]}</option>;
-              })}
-            </select>
+          <div style={{ display: "flex", gap: 16, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Select Nation"}</div>
+              <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); }}
+                style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--blue)", cursor: "pointer", minWidth: 200 }}>
+                <option value="">{"Choose..."}</option>
+                {nn.slice().map(function(n, i) { return [n, i]; }).sort(function(a, b) { return a[0].localeCompare(b[0]); }).map(function(pair) {
+                  return <option key={pair[1]} value={pair[1]} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{pair[0]}</option>;
+                })}
+              </select>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent"}</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {[[-1, "All"], [0, "GF"], [1, "SF"]].map(function(pair) {
+                  return <button key={pair[0]} className={"fb " + (selCat === pair[0] ? "on" : "")} onClick={function() { setSelCat(pair[0]); }}>{pair[1]}</button>;
+                })}
+              </div>
+            </div>
           </div>
 
           {selNation != null && breakdown && (function() {

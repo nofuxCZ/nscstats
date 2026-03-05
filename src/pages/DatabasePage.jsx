@@ -84,6 +84,7 @@ export default function DatabasePage() {
   var [sorts, setSorts] = useState([{ col: "edition", dir: "desc" }]);
   var [subFilter, setSubFilter] = useState("All");
   var [selNations, setSelNations] = useState([]);
+  var [multiSort, setMultiSort] = useState(false);
   var [selArtists, setSelArtists] = useState([]);
   var [edFrom, setEdFrom] = useState("");
   var [edTo, setEdTo] = useState("");
@@ -157,7 +158,7 @@ export default function DatabasePage() {
 
   // Click: replace sort. Shift+click: add/toggle in chain
   var handleSort = function(c, e) {
-    var shift = e && e.shiftKey;
+    var shift = (e && e.shiftKey) || multiSort;
     setPg(0);
     setSorts(function(prev) {
       if (shift) {
@@ -225,9 +226,12 @@ export default function DatabasePage() {
       <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 4 }}>
         {d.length.toLocaleString() + " entries \u00B7 All editions"}
       </p>
-      <p style={{ fontSize: 12, color: "var(--text-20)", marginBottom: 8 }}>
-        {"Click column header to sort \u00B7 Shift+click for multi-column sort"}
-      </p>
+      <div style={{ fontSize: 12, color: "var(--text-20)", marginBottom: 8, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span>{"Click column header to sort \u00B7 Shift+click for multi-column sort"}</span>
+        <button className={"fb " + (multiSort ? "on" : "")} onClick={function() { setMultiSort(!multiSort); }} style={{ fontSize: 11, padding: "3px 10px" }}>
+          {multiSort ? "Multi-sort ON" : "Multi-sort"}
+        </button>
+      </div>
       <PL />
 
       {/* Search */}
