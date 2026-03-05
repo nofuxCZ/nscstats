@@ -1,0 +1,72 @@
+# Automated NSC Wiki Scraper + Site Data Update
+# Runs every 14 days, scrapes wiki, regenerates data, commits to repo.
+# Vercel auto-deploys on each commit.
+
+name: Update NSC Data
+
+on:
+  schedule:
+    - cron: '0 4 1,15 * *'   # 1st and 15th of each month at 04:00 UTC
+  workflow_dispatch:           # Manual trigger from GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Scrape wiki (full rebuild)
+        run: |
+          cd scripts
+          python nsc_scraper.py --full-rebuild --output ./scraper_output --delay 0.8
+
+      - name: Generate site data
+        run: |
+          cd scripts
+          python generate_site_data.py \
+            --history ./scraper_output/nsc_all_history.json \
+            --output ../public/data/
+
+      - name: Show results
+        run: |
+          echo "=== Data files ==="
+          ls -lh public/data/
+          echo ""
+          python3 -c "
+          import json
+          with open('public/data/homepage.json') as f:
+              d = json.load(f)
+          s = d['s']
+          print(f'Editions: {s[\"te\"]}')
+          print(f'Nations: {s[\"tn\"]}')
+          print(f'GF entries: {s[\"gf\"]}')
+          print(f'Latest winner: #{s[\"le\"]} {s[\"lw\"]}')
+          "
+
+      - name: Commit and push
+        run: |
+          git config user.name "NSC Stats Bot"
+          git config user.email "nscstats-bot@users.noreply.github.com"
+          git add public/data/
+          if git diff --cached --quiet; then
+            echo "No changes detected"
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "🔄 Data update: ${TIMESTAMP}"
+            git push
+            echo "✅ Data committed and pushed — Vercel will auto-deploy"
+          fi
