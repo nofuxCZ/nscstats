@@ -96,6 +96,48 @@ export default function NationPage() {
 
           {h.length > 0 && (
             <div style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-60)", marginBottom: 6 }}>
+                {"Recent Results "}
+                <span style={{ fontWeight: 400, fontSize: 12, color: "var(--text-30)" }}>{"(last 20 editions)"}</span>
+              </div>
+              <div style={{ fontSize: 11, color: "var(--text-25)", display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+                <span>{"Numbers = GF place"}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "var(--red-light)" }} />{"DNQ (shows SF place)"}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--gold)" }} />{"Win"}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 2, background: "var(--blue-glow-20)", border: "1px solid var(--blue)" }} />{"PQ (4\u20136)"}</span>
+              </div>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                {h.slice(-20).map(function(r) {
+                  var ed = r[0], sfP = r[2], gfP = r[4];
+                  var isW = gfP === 1;
+                  var isM = gfP && gfP <= 3;
+                  var isPq = gfP && gfP >= 4 && gfP <= 6;
+                  var dnq = r[1] && !gfP;
+                  var bg, color, num, border;
+                  if (isW) { bg = "var(--gold)"; color = "var(--btn-body)"; num = gfP; border = "none"; }
+                  else if (isM) { bg = "var(--card-dark)"; color = "var(--text)"; num = gfP; border = "1px solid var(--border-08)"; }
+                  else if (isPq) { bg = "var(--blue-glow-20)"; color = "var(--blue)"; num = gfP; border = "1.5px solid var(--blue-glow-50)"; }
+                  else if (dnq) { bg = "var(--red-light)"; color = "var(--red-text)"; num = sfP || "?"; border = "none"; }
+                  else if (gfP) { bg = "var(--card-dark)"; color = "var(--text-60)"; num = gfP; border = "1px solid var(--border-08)"; }
+                  else { bg = "var(--text-04)"; color = "var(--text-20)"; num = "\u2014"; border = "none"; }
+                  return (
+                    <div key={ed} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                      {dnq ? <div style={{ fontSize: 8, fontWeight: 700, color: "var(--red-text)", textTransform: "uppercase", lineHeight: 1 }}>{"DNQ"}</div> : <div style={{ height: 10 }} />}
+                      <div style={{
+                        width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center",
+                        borderRadius: isW ? "50%" : 6, background: bg, border: border,
+                        fontSize: 13, fontWeight: 700, color: color,
+                      }}>{String(num)}</div>
+                      <div style={{ fontSize: 9, color: "var(--text-20)" }}>{String(ed)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {h.length > 0 && (
+            <div style={{ marginTop: 24 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-60)", marginBottom: 10 }}>{"Edition History (" + String(h.length) + " editions)"}</div>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 2px", minWidth: 700 }}>

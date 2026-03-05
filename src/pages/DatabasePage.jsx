@@ -127,7 +127,7 @@ export default function DatabasePage() {
   var fl = useMemo(function() {
     if (!d) return [];
     var rows = d;
-    if (subFilter !== "All") rows = rows.filter(function(r) { return r.sub === subFilter; });
+    if (subFilter !== "All") rows = rows.filter(function(r) { return subFilter === "SF" ? (r.sub === "SF1" || r.sub === "SF2") : r.sub === subFilter; });
     if (selNations.length > 0) rows = rows.filter(function(r) { return selNations.indexOf(r.nation) >= 0; });
     if (selArtists.length > 0) rows = rows.filter(function(r) { return selArtists.indexOf(r.artist) >= 0; });
     if (edFrom) rows = rows.filter(function(r) { return r.edition >= Number(edFrom); });
@@ -265,7 +265,7 @@ export default function DatabasePage() {
         <div>
           <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent"}</div>
           <div style={{ display: "flex", gap: 4 }}>
-            {["All", "GF", "SF1", "SF2", "MPQ"].map(function(s) {
+            {["All", "GF", "SF", "MPQ"].map(function(s) {
               return <button key={s} className={"fb " + (subFilter === s ? "on" : "")}
                 onClick={function() { setSubFilter(s); setPg(0); }}>{s}</button>;
             })}

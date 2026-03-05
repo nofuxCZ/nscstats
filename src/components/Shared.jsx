@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 
 // Subevent names and colors
 export const SN = ["GF", "SF1", "SF2", "MPQ"];
-export const SC = { "GF": "var(--gold)", "SF1": "var(--blue)", "SF2": "var(--purple)", "MPQ": "var(--pink)" };
+export const SC = { "GF": "var(--gold)", "SF": "var(--blue)", "SF1": "var(--blue)", "SF2": "var(--purple)", "MPQ": "var(--pink)" };
 
 // Loader
 export function Loader({ t }) {
