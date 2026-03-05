@@ -79,6 +79,13 @@ export default function RecordsPage() {
       bestStreak: profiles.filter(function(p) { return p.bs > 0; }).sort(function(a, b) { return b.bs - a.bs; }),
       lastPlace: profiles.filter(function(p) { return (p.gl || 0) > 0; }).sort(function(a, b) { return (b.gl || 0) - (a.gl || 0); }),
       sfEliminations: profiles.filter(function(p) { return (p.sfD || 0) > 0; }).sort(function(a, b) { return (b.sfD || 0) - (a.sfD || 0); }),
+      nqStreak: profiles.map(function(p) {
+        // Compute best NQ streak from history
+        var best = 0, cur = 0;
+        (p.h || []).forEach(function(r) { if (r[1] != null && r[4] == null) { cur++; best = Math.max(best, cur); } else cur = 0; });
+        return Object.assign({}, p, { _nqb: best });
+      }).filter(function(p) { return p._nqb >= 2; }).sort(function(a, b) { return b._nqb - a._nqb; }),
+      rejuQuals: profiles.filter(function(p) { return (p.rj || 0) > 0; }).sort(function(a, b) { return (b.rj || 0) - (a.rj || 0); }),
     };
 
     var qualRates = profiles.filter(function(p) { return p.sf >= 5 && p.qr != null; }).sort(function(a, b) { return b.qr - a.qr; });
@@ -148,6 +155,8 @@ export default function RecordsPage() {
     bestStreak: { label: "GF Streak", val: function(n) { return String(n.bs); } },
     lastPlace: { label: "GF Last Places", val: function(n) { return String(n.gl || 0); } },
     sfEliminations: { label: "SF Eliminations", val: function(n) { return String(n.sfD || 0); } },
+    nqStreak: { label: "NQ Streak", val: function(n) { return String(n._nqb || n.nqb || 0); } },
+    rejuQuals: { label: "REJU Quals", val: function(n) { return String(n.rj || 0); } },
   };
   var recCfg = {
     gfHighPts: "GF Highest Pts",

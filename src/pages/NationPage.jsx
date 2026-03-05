@@ -42,8 +42,27 @@ export default function NationPage() {
     if (p.ta) b.push("\u266B Most sent: " + String(p.ta) + " (" + String(p.tac || 0) + "x)");
     if ((p.gl || 0) > 0) b.push("\u{1F4C9} " + String(p.gl) + " last place" + (p.gl > 1 ? "s" : "") + " in GF");
     if ((p.sfD || 0) > 0) b.push("\u274C " + String(p.sfD) + " SF elimination" + (p.sfD > 1 ? "s" : ""));
+    if ((p.rj || 0) > 0) b.push("\u{1F3AB} " + String(p.rj) + " REJU qualification" + (p.rj > 1 ? "s" : ""));
+    // NQ streaks computed from history
+    if (h.length > 0) {
+      var best = 0, cur = 0, cNQ = 0;
+      for (var i = 0; i < h.length; i++) {
+        var hasSF = h[i][1] != null;
+        var hasGF = h[i][4] != null;
+        var dnq = hasSF && !hasGF;
+        if (dnq) { cur++; best = Math.max(best, cur); } else { cur = 0; }
+      }
+      // Current NQ streak (from most recent edition backwards)
+      for (var j = h.length - 1; j >= 0; j--) {
+        var hasSF2 = h[j][1] != null;
+        var hasGF2 = h[j][4] != null;
+        if (hasSF2 && !hasGF2) cNQ++; else break;
+      }
+      if (best >= 3) b.push("\u{1F6AB} " + String(best) + "-edition worst NQ streak");
+      if (cNQ >= 2) b.push("\u26A0\uFE0F Currently on " + String(cNQ) + "-edition NQ streak");
+    }
     return b;
-  }, [p]);
+  }, [p, h]);
 
   var PS = 25;
   var tp = Math.ceil(h.length / PS);

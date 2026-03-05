@@ -126,6 +126,17 @@ def main():
         ed=r["Edition"]; pl=r.get("Place")
         if ed and pl: max_gf_place[ed]=max(max_gf_place.get(ed,0),pl)
 
+    # Build REJU qualifier lookup from edition data
+    reju_quals = defaultdict(int)  # nation -> count of REJU qualifications
+    for ed in sorted(editions_d):
+        subs = editions_d[ed]
+        gf_n = set(e[1] for e in subs["gf"])
+        for sk in ["sf1", "sf2"]:
+            for e in sorted(subs[sk], key=lambda x: x[4] if x[4] else 999):
+                if e[4] and e[4] > 10 and e[1] in gf_n:
+                    reju_quals[e[1]] += 1
+                    break
+
     all_nations = sorted(set(r["Nation"] for r in nsc if r.get("Nation")))
     profiles = {}
     for nation in all_nations:
@@ -144,6 +155,20 @@ def main():
         for ie in range(len(gf_eds)):
             cs=cs+1 if ie==0 or gf_eds[ie]==gf_eds[ie-1]+1 else 1
             bs=max(bs,cs)
+        # NQ streak (best and current)
+        nq_best=nq_cur=nq_now=0
+        ed_map_tmp=defaultdict(dict)
+        for r in n_all: ed_map_tmp[r["Edition"]][r["Subevent"]]=r
+        for ed_i in all_eds:
+            s=ed_map_tmp[ed_i]; sf_r=s.get("SF1") or s.get("SF2"); gf_r=s.get("GF")
+            dnq = sf_r is not None and gf_r is None
+            if dnq: nq_cur+=1; nq_best=max(nq_best,nq_cur)
+            else: nq_cur=0
+        # Current NQ streak from end
+        for ed_i in reversed(all_eds):
+            s=ed_map_tmp[ed_i]; sf_r=s.get("SF1") or s.get("SF2"); gf_r=s.get("GF")
+            if sf_r is not None and gf_r is None: nq_now+=1
+            else: break
         ac=Counter()
         seen_ed_art=set()
         for r in n_all:
@@ -155,11 +180,9 @@ def main():
                 ac[a]+=1
         ta=ac.most_common(1)[0] if ac else (None,0)
         we=[r["Edition"] for r in n_gf if r.get("Place")==1]
-        ed_map=defaultdict(dict)
-        for r in n_all: ed_map[r["Edition"]][r["Subevent"]]=r
         hist=[]
         for ed in all_eds:
-            s=ed_map[ed]; sf_r=s.get("SF1") or s.get("SF2"); gf_r=s.get("GF"); mpq=s.get("MICROSTATE QUALIFICATION")
+            s=ed_map_tmp[ed]; sf_r=s.get("SF1") or s.get("SF2"); gf_r=s.get("GF"); mpq=s.get("MICROSTATE QUALIFICATION")
             src=gf_r or sf_r or mpq
             hist.append([ed,sf_r["Subevent"] if sf_r else None,sf_r.get("Place") if sf_r else None,sf_r.get("Points") if sf_r else None,
                 gf_r.get("Place") if gf_r else None,gf_r.get("Points") if gf_r else None,
@@ -172,7 +195,8 @@ def main():
             "bpts":max(gf_points) if gf_points else None,
             "ap":round(sum(gf_points)/len(gf_points),1) if gf_points else None,
             "apl":round(sum(gf_places)/len(gf_places),1) if gf_places else None,
-            "bs":bs,"ta":ta[0],"tac":ta[1],"h":hist}
+            "bs":bs,"nqb":nq_best,"nqc":nq_now,"rj":reju_quals.get(nation,0),
+            "ta":ta[0],"tac":ta[1],"h":hist}
 
     sn_list=sorted(profiles.keys(), key=lambda n:-profiles[n]["gf"])
     # Keep full history for ALL nations (no truncation)

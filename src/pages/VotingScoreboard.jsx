@@ -10,6 +10,7 @@ export default function VotingScoreboard() {
   var [sub, setSub] = useState(0);
   var [selNation, setSelNation] = useState(null);
   var [view, setView] = useState("scoreboard"); // scoreboard | received | given
+  var [expandAll, setExpandAll] = useState(false);
 
   useEffect(function() {
     loadData("voting").then(function(d) {
@@ -111,7 +112,7 @@ export default function VotingScoreboard() {
       {/* View tabs */}
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 16 }}>
         {[["scoreboard", "Edition Scoreboard"], ["received", "Points Received"], ["given", "Points Given"]].map(function(t) {
-          return <button key={t[0]} className={"tt " + (view === t[0] ? "on" : "")} onClick={function() { setView(t[0]); }}>{t[1]}</button>;
+          return <button key={t[0]} className={"tt " + (view === t[0] ? "on" : "")} onClick={function() { setView(t[0]); setExpandAll(false); }}>{t[1]}</button>;
         })}
       </div>
 
@@ -183,7 +184,7 @@ export default function VotingScoreboard() {
           <div style={{ display: "flex", gap: 16, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 16 }}>
             <div>
               <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Select Nation"}</div>
-              <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); }}
+              <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); setExpandAll(false); }}
                 style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--blue)", cursor: "pointer", minWidth: 200 }}>
                 <option value="">{"Choose..."}</option>
                 {nn.slice().map(function(n, i) { return [n, i]; }).sort(function(a, b) { return a[0].localeCompare(b[0]); }).map(function(pair) {
@@ -238,7 +239,7 @@ export default function VotingScoreboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {nList.slice(0, 50).map(function(item) {
+                      {(expandAll ? nList : nList.slice(0, 50)).map(function(item) {
                         return <tr key={item.idx}>
                           <td style={{ position: "sticky", left: 0, zIndex: 1, padding: "4px 8px", background: "var(--bg)", fontWeight: 600, color: "var(--text-60)", borderBottom: "1px solid var(--text-04)", fontSize: 12, maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis" }}>
                             {nn[item.idx] || String(item.idx)}
@@ -261,6 +262,11 @@ export default function VotingScoreboard() {
                     </tbody>
                   </table>
                 </div>
+                {nList.length > 50 && (
+                  <button className="xb" style={{ marginTop: 12 }} onClick={function() { setExpandAll(!expandAll); }}>
+                    {expandAll ? "Show Top 50" : "Show All " + nList.length}
+                  </button>
+                )}
               </div>
             );
           })()}
