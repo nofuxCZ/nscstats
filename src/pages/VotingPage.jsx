@@ -73,6 +73,7 @@ export default function VotingPage() {
   const [minEd, setMinEd] = useState(5);
   const [allPairs, setAllPairs] = useState(null);
   const [computing, setComputing] = useState(false);
+  const [catFilter, setCatFilter] = useState("all");
 
   useEffect(() => {
     loadData("voting").then(d => {
@@ -102,24 +103,38 @@ export default function VotingPage() {
   }, [D]);
 
   const MAX = 448;
+  const cats = catFilter === "gf" ? [0] : catFilter === "sf" ? [1] : [0, 1];
 
   const csim = useCallback((v1, v2) => {
     let ts = 0, cnt = 0;
     for (const ed of AE) {
       if (ed < edFrom || ed > edTo) continue;
-      let edScore = 0, edFound = 0;
-      for (const cat of [0, 1]) {
-        const m1 = RM.get(ed + "_" + cat + "_" + v1);
-        const m2 = RM.get(ed + "_" + cat + "_" + v2);
-        if (!m1 || !m2) continue;
-        let sc = 0;
-        for (const [ni, p1] of m1) { const p2 = m2.get(ni); if (p2) sc += p1 * p2; }
-        edScore += sc / MAX; edFound++;
+      if (catFilter === "all") {
+        // Average GF+SF within same edition into one score
+        let edScore = 0, edFound = 0;
+        for (const cat of [0, 1]) {
+          const m1 = RM.get(ed + "_" + cat + "_" + v1);
+          const m2 = RM.get(ed + "_" + cat + "_" + v2);
+          if (!m1 || !m2) continue;
+          let sc = 0;
+          for (const [ni, p1] of m1) { const p2 = m2.get(ni); if (p2) sc += p1 * p2; }
+          edScore += sc / MAX; edFound++;
+        }
+        if (edFound > 0) { ts += edScore / edFound; cnt++; }
+      } else {
+        // Single category: each subevent counted separately
+        for (const cat of cats) {
+          const m1 = RM.get(ed + "_" + cat + "_" + v1);
+          const m2 = RM.get(ed + "_" + cat + "_" + v2);
+          if (!m1 || !m2) continue;
+          let sc = 0;
+          for (const [ni, p1] of m1) { const p2 = m2.get(ni); if (p2) sc += p1 * p2; }
+          ts += sc / MAX; cnt++;
+        }
       }
-      if (edFound > 0) { ts += edScore / edFound; cnt++; }
     }
     return cnt >= minEd ? { s: Math.round((ts / cnt) * 1000) / 10, n: cnt } : null;
-  }, [AE, RM, edFrom, edTo, minEd]);
+  }, [AE, RM, edFrom, edTo, minEd, catFilter, cats]);
 
   const pairSim = useMemo(() => (sel != null && cmp != null) ? csim(sel, cmp) : null, [sel, cmp, csim]);
 
@@ -143,18 +158,29 @@ export default function VotingPage() {
     setComputing(true);
     setTimeout(() => {
       const active = new Map();
-      for (const ed of AE) { if (ed < edFrom || ed > edTo) continue; var edVoters = new Set(); for (const cat of [0, 1]) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) edVoters.add(vi); } for (const vi of edVoters) active.set(vi, (active.get(vi) || 0) + 1); }
+      for (const ed of AE) {
+        if (ed < edFrom || ed > edTo) continue;
+        if (catFilter === "all") {
+          var edVoters = new Set();
+          for (const cat of [0, 1]) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) edVoters.add(vi); }
+          for (const vi of edVoters) active.set(vi, (active.get(vi) || 0) + 1);
+        } else {
+          for (const cat of cats) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) active.set(vi, (active.get(vi) || 0) + 1); }
+        }
+      }
       const avs = [...active.entries()].filter(([, c]) => c >= minEd).map(([vi]) => vi).sort((a, b) => a - b);
       const pairs = [];
       for (let i = 0; i < avs.length; i++) for (let j = i + 1; j < avs.length; j++) { const r = csim(avs[i], avs[j]); if (r) pairs.push({ a: avs[i], b: avs[j], ...r }); }
       pairs.sort((a, b) => b.s - a.s);
       setAllPairs(pairs); setComputing(false);
     }, 50);
-  }, [AE, RV, edFrom, edTo, minEd, csim]);
+  }, [AE, RV, edFrom, edTo, minEd, csim, catFilter, cats]);
+
+  const subLabel = catFilter === "all" ? "editions" : "subevents";
 
   const xCSV = () => {
     if (!allPairs || !D) return;
-    const h = "Voter 1,Voter 2,Similarity %,Shared Editions\n";
+    const h = "Voter 1,Voter 2,Similarity %,Shared " + (catFilter === "all" ? "Editions" : "Subevents") + "\n";
     const b = allPairs.map(p => '"' + D.n[p.a] + '","' + D.n[p.b] + '",' + p.s + ',' + p.n).join("\n");
     const bl = new Blob(["\uFEFF" + h + b], { type: "text/csv;charset=utf-8;" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(bl); a.download = "nsc_voting_similarity.csv"; a.click();
@@ -170,7 +196,7 @@ export default function VotingPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px" }}>
       <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,4vw,34px)", fontWeight: 900, background: "linear-gradient(135deg, var(--text), var(--purple))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4 }}>Voting Analysis</h1>
       <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 4 }}>{nn.length} nations · Editions {D.e[0]}–{D.e[1]}</p>
-      <p style={{ fontSize: 11, color: "var(--text-20)", marginBottom: 12 }}>Similarity = avg(sum(pts1 * pts2) / 448) per edition. Computed live in your browser.</p>
+      <p style={{ fontSize: 11, color: "var(--text-20)", marginBottom: 12 }}>Similarity = avg(sum(pts1 × pts2) / 448) per {catFilter === "all" ? "edition (GF+SF averaged)" : "subevent"}. Computed live in your browser.</p>
       <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
         <span style={{ fontSize: 11, color: "var(--text-30)" }}>Editions</span>
         <input type="number" value={edFrom} onChange={e => { setEdFrom(Number(e.target.value)); setAllPairs(null); }} style={iStyle} />
@@ -178,6 +204,14 @@ export default function VotingPage() {
         <input type="number" value={edTo} onChange={e => { setEdTo(Number(e.target.value)); setAllPairs(null); }} style={iStyle} />
         <span style={{ fontSize: 11, color: "var(--text-30)", marginLeft: 8 }}>Min. shared</span>
         <input type="number" value={minEd} onChange={e => { setMinEd(Number(e.target.value) || 1); setAllPairs(null); }} style={{ ...iStyle, width: 50 }} />
+        <span style={{ fontSize: 11, color: "var(--text-30)", marginLeft: 8 }}>Subevent</span>
+        <div style={{ display: "flex", gap: 4 }}>
+          {[["all", "All"], ["gf", "GF"], ["sf", "SF"]].map(([k, l]) => (
+            <button key={k} className={"fb " + (catFilter === k ? "on" : "")}
+              onClick={() => { setCatFilter(k); setAllPairs(null); }}
+              style={{ fontSize: 11, padding: "3px 10px" }}>{l}</button>
+          ))}
+        </div>
       </div>
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 16 }}>
         {[["explorer", "Nation Explorer"], ["leaderboard", "All Pairs"]].map(([k, l]) => (
@@ -199,7 +233,7 @@ export default function VotingPage() {
                 <span style={{ fontSize: 18, fontWeight: 700, color: "var(--purple)" }}>{nn[cmp]}</span>
               </div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 44, fontWeight: 900, color: pairSim ? (pairSim.s > 60 ? "var(--gold)" : pairSim.s > 40 ? "var(--blue)" : "var(--text-45)") : "var(--text-20)" }}>{pairSim ? pairSim.s + "%" : "N/A"}</div>
-              <div style={{ fontSize: 11, color: "var(--text-30)" }}>VOTING SIMILARITY{pairSim ? " · " + pairSim.n + " shared editions" : ""}</div>
+              <div style={{ fontSize: 11, color: "var(--text-30)" }}>VOTING SIMILARITY{pairSim ? " · " + pairSim.n + " shared " + subLabel : ""}</div>
             </div>
           )}
           <div className="g2" style={{ display: "grid", gridTemplateColumns: cmp != null ? "1fr 1fr" : "1fr", gap: 20 }}>
@@ -220,7 +254,7 @@ export default function VotingPage() {
           {allPairs && (
             <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 2px" }}>
               <thead><tr>
-                {["#", "Nation A", "Nation B", "Similarity", "Ed."].map((h, i) => (
+                {["#", "Nation A", "Nation B", "Similarity", catFilter === "all" ? "Ed." : "Sub."].map((h, i) => (
                   <th key={h} style={{ padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--text-30)", textTransform: "uppercase", textAlign: i >= 3 ? "center" : "left", borderBottom: "1px solid var(--border-08)", width: [36, null, null, 160, 60][i] }}>{h}</th>
                 ))}
               </tr></thead>
