@@ -79,11 +79,25 @@ META_COLS = {
     "draw", "place", "country", "nation", "pot", "total", "points",
     "artist", "song", "rank", "placing", "running order", "number",
     "link", "video", "video link", "recap", "recap timestamps",
-    "semi", "user", "", "bonus",
+    "semi", "user", "", "bonus", "res", "result", "results",
+    "pts", "sum", "count", "check", "tiebreaker", "tb",
+    "# voters", "#voters", "voters", "12s", "10s", "8s",
+    "6 points", "7", "values ok", "count ok", "sum ok",
+    "valid", "entries", "draw res", "curr voter",
+    "waiting list jury", "waiting list jury points",
 }
 
 # Also skip columns that look like formulas or computed values
 FORMULA_PATTERNS = [r"^=", r"^total$", r"^points$", r"^placing$", r"^rank$"]
+
+# Row nation values that are metadata (not actual nations)
+META_ROW_PATTERNS = [
+    r"^#\s*voters?$", r"^\d+s$", r"^\d+\s*points?$", r"^sum\b", r"^count\b",
+    r"^values?\s*ok$", r"^tiebreak", r"^bonus$", r"^total$", r"^points?$",
+    r"^rank", r"^draw$", r"^result", r"^=", r"^check", r"^valid",
+    r"^recap", r"^voters?$", r"^entries$",
+    r"^s\s*votes\s*have\s*been",  # "s votes have been counted as follows"
+]
 
 
 def classify_sheet(name: str) -> str | None:
@@ -109,6 +123,9 @@ def is_meta_column(col_name: str) -> bool:
         return True
     # Single character or very short strings that look like abbreviations for stats
     if len(clean) <= 1 and clean not in ("ÿ",):  # "Ÿ" is a nation name
+        return True
+    # Skip columns with "votes have been counted" text
+    if "votes have been" in clean:
         return True
     return False
 
@@ -265,6 +282,13 @@ def parse_voting_sheet(ws, subevent: str) -> list[dict]:
         # Skip if nation looks like a number
         if re.match(r"^\d+\.?\d*$", nation):
             continue
+        # Skip if nation is a formula
+        if nation.startswith("="):
+            continue
+        # Skip metadata rows (Sum OK, Count OK, # Voters, 12s, etc.)
+        nation_lower = nation.lower().strip()
+        if any(re.search(p, nation_lower) for p in META_ROW_PATTERNS):
+            continue
         
         for col_idx, voter_name in voter_cols:
             if col_idx >= len(row):
@@ -286,6 +310,12 @@ def normalize_name(name: str) -> str:
         return name
     # Strip whitespace
     name = name.strip()
+    # Normalize WL voter variants to canonical form
+    # Don't match real nation names like "Waiting Iist of Shelley & Nici"
+    wl_exact = {"waiting list", "wl", "waliju", "waiting list jury", "wl jury"}
+    nl = name.lower().strip()
+    if nl in wl_exact or re.match(r"^wl\s*votes?\b", nl):
+        return "Waiting List"
     # Some files use ALL CAPS for voter names
     if name.isupper() and len(name) > 3:
         # Convert to title case but preserve known special cases

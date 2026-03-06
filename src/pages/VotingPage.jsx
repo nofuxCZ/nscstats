@@ -89,10 +89,21 @@ export default function VotingPage() {
     if (!D) return { RM: new Map(), RV: new Map(), AE: [] };
     const RM = new Map(), RV = new Map();
     for (const rec of D.r) {
-      const [ed, cat, vi, pairs] = rec;
+      const [ed, cat, vi, pairs, isp] = rec;
       const key = ed + "_" + cat + "_" + vi;
       const m = new Map();
-      for (let i = 0; i < pairs.length; i += 2) m.set(pairs[i], pairs[i + 1]);
+      if (isp) {
+        // Self-vote adjustment for similarity: voter gives themselves 12
+        m.set(vi, 12);
+        for (let i = 0; i < pairs.length; i += 2) {
+          const ni = pairs[i], raw = pairs[i + 1];
+          // Shift: 12→10, 10→8, others→pts-1 (1→0 which is dropped)
+          const adj = raw === 12 ? 10 : raw === 10 ? 8 : raw - 1;
+          if (adj > 0) m.set(ni, adj);
+        }
+      } else {
+        for (let i = 0; i < pairs.length; i += 2) m.set(pairs[i], pairs[i + 1]);
+      }
       RM.set(key, m);
       const rk = ed + "_" + cat;
       if (!RV.has(rk)) RV.set(rk, []);

@@ -224,8 +224,34 @@ def main():
         for i, row in enumerate(ws.iter_rows(values_only=True)):
             if i==0: continue
             if row[0] is None: continue
-            votes_raw.append((int(row[0]),str(row[1] or "").strip(),str(row[2] or "").strip(),str(row[3] or "").strip(),int(row[4]) if row[4] else 0))
+            try:
+                votes_raw.append((int(row[0]),str(row[1] or "").strip(),str(row[2] or "").strip(),str(row[3] or "").strip(),int(row[4]) if row[4] else 0))
+            except (ValueError, TypeError):
+                continue
         wb.close()
+
+        # Junk names to filter out (metadata from host Excel files)
+        import re as _re
+        _junk_patterns = [
+            r"^#\s*voters?$", r"^\d+s$", r"^\d+\s*points?$", r"^sum\b", r"^count\b",
+            r"^values?\s*ok$", r"^tiebreak", r"^bonus$", r"^total$", r"^points?$",
+            r"^place$", r"^rank", r"^draw$", r"^result", r"^=", r"^\d+$",
+            r"^check", r"^valid", r"^recap", r"^voters?$", r"^entries$",
+            r"^waiting\s*list\s*jury\s*points?$",  # metadata col, not a nation
+        ]
+        # Build set of known short nation names from database
+        _known_short = set(r.get("Nation","").lower() for r in nsc if r.get("Nation") and len(r["Nation"]) <= 2)
+        def _is_junk(name):
+            if not name: return True
+            nl = name.lower().strip()
+            if nl in _known_short: return False
+            if len(name) < 2: return True
+            return any(_re.search(p, nl) for p in _junk_patterns)
+
+        # Filter out junk voter/nation names
+        votes_raw = [(ed, sub, voter, nation, pts) for ed, sub, voter, nation, pts in votes_raw
+                     if not _is_junk(voter) and not _is_junk(nation) and pts > 0]
+        print(f"  After junk filter: {len(votes_raw)} vote records")
 
         # Subevent codes: 0=GF, 1=S1, 2=S2, 3=WL, 4=R1, 5=R2
         sub_code={"GF":0,"S1":1,"S2":2,"WL":3,"R1":4,"R2":5}
@@ -261,8 +287,22 @@ def main():
         # Also add roster names
         for n in owner_map:
             if n.lower() not in canon: canon[n.lower()] = n
+
+        # WL voter name normalization — map all variants to "Waiting List"
+        # Be careful NOT to match actual nations like "Waiting Iist of Shelley & Nici"
+        _wl_exact = {"waiting list", "wl", "waliju", "waiting list jury"}
+        def _is_wl_name(name):
+            nl = name.lower().strip()
+            if nl in _wl_exact: return True
+            if _re.match(r"^wl\s*votes?\b", nl): return True
+            if _re.match(r"^waiting\s*list$", nl): return True
+            return False
+
         def norm(name):
-            return canon.get(name.lower(), name) if name else name
+            if not name: return name
+            # Normalize WL voter variants
+            if _is_wl_name(name): return "Waiting List"
+            return canon.get(name.lower(), name)
 
         # Normalize names in votes
         votes_raw = [(ed, sub, norm(voter), norm(nation), pts) for ed, sub, voter, nation, pts in votes_raw]
@@ -280,19 +320,12 @@ def main():
             cat=sub_code.get(sub, 0)
             vi=vn2i.get(voter,-1)
             if vi<0: continue
+            # Store RAW votes (no self-vote adjustment) + participant flag
             pairs=[]
             for nation,pts in vl:
-                if isp:
-                    if pts==1: an,ap=voter,12
-                    elif pts==12: an,ap=nation,10
-                    elif pts==10: an,ap=nation,8
-                    elif pts==0: an,ap=nation,0
-                    else: an,ap=nation,pts-1
-                else: an,ap=nation,pts
-                if ap>0:
-                    ni=vn2i.get(an,-1)
-                    if ni>=0: pairs.extend([ni,ap])
-            if pairs: rounds.append([ed,cat,vi,pairs])
+                ni=vn2i.get(nation,-1)
+                if ni>=0 and pts>0: pairs.extend([ni,pts])
+            if pairs: rounds.append([ed,cat,vi,pairs,1 if isp else 0])
 
         love=defaultdict(lambda:[0,0])
         for ed,sub,voter,nation,pts in votes_raw:

@@ -8,7 +8,7 @@ var SUB_SHORT = { 0: "GF", 1: "SF1", 2: "SF2", 3: "WL", 4: "R1", 5: "R2" };
 export default function VotingScoreboard() {
   var [D, setD] = useState(null);
   var [ed, setEd] = useState(null);
-  var [sub, setSub] = useState(0);
+  var [subs, setSubs] = useState([0]);
   var [selNation, setSelNation] = useState(null);
   var [view, setView] = useState("scoreboard"); // scoreboard | received | given
   var [expandAll, setExpandAll] = useState(false);
@@ -31,10 +31,17 @@ export default function VotingScoreboard() {
     return Array.from(new Set(D.r.filter(function(r) { return r[0] === ed; }).map(function(r) { return r[1]; }))).sort();
   }, [D, ed]);
 
-  // Build scoreboard matrix for current edition + sub
+  function toggleSub(s) {
+    setSubs(function(prev) {
+      if (prev.indexOf(s) >= 0) { var n = prev.filter(function(x) { return x !== s; }); return n.length > 0 ? n : [s]; }
+      return prev.concat([s]);
+    });
+  }
+
+  // Build scoreboard matrix for current edition + selected subs
   var matrix = useMemo(function() {
     if (!D || !ed) return null;
-    var recs = D.r.filter(function(r) { return r[0] === ed && r[1] === sub; });
+    var recs = D.r.filter(function(r) { return r[0] === ed && subs.indexOf(r[1]) >= 0; });
     if (recs.length === 0) return null;
 
     // Get all contestants (recipients) and voters
@@ -54,7 +61,7 @@ export default function VotingScoreboard() {
       pts[vi] = pts[vi] || {};
       var pairs = r[3];
       for (var i = 0; i < pairs.length; i += 2) {
-        pts[vi][pairs[i]] = pairs[i + 1];
+        pts[vi][pairs[i]] = (pts[vi][pairs[i]] || 0) + pairs[i + 1];
         recipientTotals[pairs[i]] = (recipientTotals[pairs[i]] || 0) + pairs[i + 1];
       }
     });
@@ -64,9 +71,16 @@ export default function VotingScoreboard() {
     var vList = Array.from(voters).sort(function(a, b) { return (D.n[a] || "").localeCompare(D.n[b] || ""); });
 
     return { contestants: cList, voters: vList, pts: pts, totals: recipientTotals };
-  }, [D, ed, sub]);
+  }, [D, ed, subs]);
 
-  var [selCat, setSelCat] = useState(-1); // -1 = all, 0 = GF, 1 = SF
+  var [selCats, setSelCats] = useState([]);
+
+  function toggleCat(c) {
+    setSelCats(function(prev) {
+      if (prev.indexOf(c) >= 0) return prev.filter(function(x) { return x !== c; });
+      return prev.concat([c]);
+    });
+  }
 
   // Build nation-by-edition breakdown
   var breakdown = useMemo(function() {
@@ -75,10 +89,9 @@ export default function VotingScoreboard() {
     var given = {};
     D.r.forEach(function(r) {
       var redition = r[0], rcat = r[1], vi = r[2], pairs = r[3];
-      if (selCat >= 0 && rcat !== selCat) return;
+      if (selCats.length > 0 && selCats.indexOf(rcat) < 0) return;
       for (var i = 0; i < pairs.length; i += 2) {
         var ri = pairs[i];
-        // Skip self-votes
         if (ri === vi) continue;
         if (ri === selNation && vi !== selNation) {
           if (!received[redition]) received[redition] = {};
@@ -91,7 +104,7 @@ export default function VotingScoreboard() {
       }
     });
     return { received: received, given: given };
-  }, [D, selNation, selCat]);
+  }, [D, selNation, selCats]);
 
   if (!D) return <Loader t="Loading voting data..." />;
 
@@ -121,13 +134,13 @@ export default function VotingScoreboard() {
       {view === "scoreboard" && (
         <div className="fi">
           <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
-            <select value={ed || ""} onChange={function(e) { setEd(Number(e.target.value)); setSub(0); }}
+            <select value={ed || ""} onChange={function(e) { setEd(Number(e.target.value)); setSubs([0]); }}
               style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 700, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--gold)", cursor: "pointer", fontFamily: "var(--font-display)" }}>
               {allEds.map(function(e) { return <option key={e} value={e} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{"#" + e}</option>; })}
             </select>
             <div style={{ display: "flex", gap: 4 }}>
               {availSubs.map(function(s) {
-                return <button key={s} className={"fb " + (sub === s ? "on" : "")} onClick={function() { setSub(s); }}>{SUB_SHORT[s] || String(s)}</button>;
+                return <button key={s} className={"fb " + (subs.indexOf(s) >= 0 ? "on" : "")} onClick={function() { toggleSub(s); }}>{SUB_SHORT[s] || String(s)}</button>;
               })}
             </div>
             <span style={{ fontSize: 13, color: "var(--text-30)" }}>
@@ -194,11 +207,12 @@ export default function VotingScoreboard() {
               </select>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent"}</div>
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent (none = all)"}</div>
               <div style={{ display: "flex", gap: 4 }}>
-                {[[-1, "All"], [0, "GF"], [3, "WL"], [1, "SF1"], [2, "SF2"], [4, "R1"], [5, "R2"]].map(function(pair) {
-                  return <button key={pair[0]} className={"fb " + (selCat === pair[0] ? "on" : "")} onClick={function() { setSelCat(pair[0]); }}>{pair[1]}</button>;
+                {[[0, "GF"], [3, "WL"], [1, "SF1"], [2, "SF2"], [4, "R1"], [5, "R2"]].map(function(pair) {
+                  return <button key={pair[0]} className={"fb " + (selCats.indexOf(pair[0]) >= 0 ? "on" : "")} onClick={function() { toggleCat(pair[0]); }}>{pair[1]}</button>;
                 })}
+                {selCats.length > 0 && <button className="xb" onClick={function() { setSelCats([]); }} style={{ fontSize: 11, padding: "3px 8px" }}>All</button>}
               </div>
             </div>
           </div>
