@@ -1,6 +1,6 @@
 # NSC Stats
 
-Nation Song Contest Statistics — a modern React website for browsing 247+ editions of NSC results, nation profiles, records, and voting analysis.
+Nation Song Contest Statistics — a React website for browsing 247+ editions of NSC results, nation profiles, records, and voting analysis.
 
 Live soon at [nscstats.com](https://nscstats.com)
 
