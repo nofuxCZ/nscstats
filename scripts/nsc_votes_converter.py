@@ -81,22 +81,27 @@ META_COLS = {
     "link", "video", "video link", "recap", "recap timestamps",
     "semi", "user", "", "bonus", "res", "result", "results",
     "pts", "sum", "count", "check", "tiebreaker", "tb",
-    "# voters", "#voters", "voters", "12s", "10s", "8s",
+    "# voters", "#voters", "voters", "no. of voters", "12s", "10s", "8s",
     "6 points", "7", "values ok", "count ok", "sum ok",
     "valid", "entries", "draw res", "curr voter",
     "waiting list jury", "waiting list jury points",
+    "rank tiebreak", "tiebreaker f", "tie-break", "tie break",
+    "higher score", "bonus stars",
 }
 
 # Also skip columns that look like formulas or computed values
-FORMULA_PATTERNS = [r"^=", r"^total$", r"^points$", r"^placing$", r"^rank$"]
+FORMULA_PATTERNS = [r"^=", r"^total$", r"^points$", r"^placing$", r"^rank$", r"https?://", r"youtu\.?be"]
 
 # Row nation values that are metadata (not actual nations)
 META_ROW_PATTERNS = [
     r"^#\s*voters?$", r"^\d+s$", r"^\d+\s*points?$", r"^sum\b", r"^count\b",
-    r"^values?\s*ok$", r"^tiebreak", r"^bonus$", r"^total$", r"^points?$",
-    r"^rank", r"^draw$", r"^result", r"^=", r"^check", r"^valid",
-    r"^recap", r"^voters?$", r"^entries$",
-    r"^s\s*votes\s*have\s*been",  # "s votes have been counted as follows"
+    r"^values?\s*ok$", r"^tiebreak", r"^tie[\s-]?break", r"^bonus",
+    r"^total$", r"^points?$", r"^rank", r"^draw$", r"^result", r"^=",
+    r"^check", r"^valid", r"^recap", r"^voters?$", r"^entries$",
+    r"^s\s*votes\s*have\s*been", r"^no\.?\s*of\s*voters?",
+    r"^higher\s*score", r"^bonus\s*stars?",
+    r"https?://", r"youtu\.?be", r"\.com/", r"\.be/",
+    r"^column\s*\d+$",
 ]
 
 

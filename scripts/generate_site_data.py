@@ -234,10 +234,14 @@ def main():
         import re as _re
         _junk_patterns = [
             r"^#\s*voters?$", r"^\d+s$", r"^\d+\s*points?$", r"^sum\b", r"^count\b",
-            r"^values?\s*ok$", r"^tiebreak", r"^bonus$", r"^total$", r"^points?$",
-            r"^place$", r"^rank", r"^draw$", r"^result", r"^=", r"^\d+$",
-            r"^check", r"^valid", r"^recap", r"^voters?$", r"^entries$",
-            r"^waiting\s*list\s*jury\s*points?$",  # metadata col, not a nation
+            r"^values?\s*ok$", r"^tiebreak", r"^tie[\s-]?break", r"^bonus",
+            r"^total$", r"^points?$", r"^place$", r"^rank", r"^draw$",
+            r"^result", r"^=", r"^\d+$", r"^check", r"^valid", r"^recap",
+            r"^voters?$", r"^entries$", r"^no\.?\s*of\s*voters?",
+            r"^higher\s*score", r"^bonus\s*stars?",
+            r"^waiting\s*list\s*jury\s*points?$",
+            r"https?://", r"youtu\.?be", r"\.com/", r"\.be/",
+            r"^column\s*\d+$",
         ]
         # Build set of known short nation names from database
         _known_short = set(r.get("Nation","").lower() for r in nsc if r.get("Nation") and len(r["Nation"]) <= 2)
@@ -288,8 +292,40 @@ def main():
         for n in owner_map:
             if n.lower() not in canon: canon[n.lower()] = n
 
+        # Fuzzy map: strip diacritics + hyphens + spaces for approximate matching
+        import unicodedata
+        def _strip(s):
+            return ''.join(c for c in unicodedata.normalize('NFD', s.lower()) if unicodedata.category(c) != 'Mn').replace('-', '').replace(' ', '').replace("'", "")
+        fuzzy = {}
+        for n in canon.values():
+            k = _strip(n)
+            if k not in fuzzy: fuzzy[k] = n
+
+        # Manual aliases for known abbreviations/misspellings in voting data
+        _aliases = {
+            "gd strenci": "Grand Duchy of Strenci", "grand duchy of strenc": "Grand Duchy of Strenci",
+            "uk destrion": "United Kingdom of Destrion", "uk of destrion": "United Kingdom of Destrion",
+            "ukod": "United Kingdom of Destrion", "rld": "Reym-L-Dneurb",
+            "fr meridia": "Federal Republic of Meridia", "federal republic of meridia": "Federal Republic of Meridia",
+            "federal republic of meridia": "Federal Republic of Meridia",
+            "balearica islands": "Balearica Island", "kordavian island": "Kordavian Islands",
+            "dez reublic": "Dež Republic", "papedink": "Papendink",
+            "roseland]": "Roseland", "wisn": "Wisn", "wsn": "Wisn",
+            "waiting iist": "Waiting Iist of Shelley & Nici",
+            "waiting iist of shelly & nici": "Waiting Iist of Shelley & Nici",
+            "whispering isles": "Whispering Isles", "whispering isles (wl)": "Whispering Isles",
+            "wi": "Whispering Isles", "strenci": "Grand Duchy of Strenci",
+            "celibate union of men": "Celibate Union of Men",
+        }
+        for k, v in _aliases.items():
+            canon[k] = v
+
+        # Also add fuzzy entries for roster names
+        for n in owner_map:
+            k = _strip(n)
+            if k not in fuzzy: fuzzy[k] = n
+
         # WL voter name normalization — map all variants to "Waiting List"
-        # Be careful NOT to match actual nations like "Waiting Iist of Shelley & Nici"
         _wl_exact = {"waiting list", "wl", "waliju", "waiting list jury"}
         def _is_wl_name(name):
             nl = name.lower().strip()
@@ -300,9 +336,14 @@ def main():
 
         def norm(name):
             if not name: return name
-            # Normalize WL voter variants
             if _is_wl_name(name): return "Waiting List"
-            return canon.get(name.lower(), name)
+            nl = name.lower().strip()
+            # Exact case-insensitive match
+            if nl in canon: return canon[nl]
+            # Fuzzy match (strip diacritics/hyphens)
+            fk = _strip(name)
+            if fk in fuzzy: return fuzzy[fk]
+            return name
 
         # Normalize names in votes
         votes_raw = [(ed, sub, norm(voter), norm(nation), pts) for ed, sub, voter, nation, pts in votes_raw]
