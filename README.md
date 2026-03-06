@@ -1,8 +1,8 @@
 # NSC Stats
 
-Nation Song Contest Statistics — a modern React website for browsing 247+ editions of NSC results, nation profiles, records, and voting analysis.
+Nation Song Contest Statistics — a React website for browsing 247+ editions of NSC results, nation profiles, records, and voting analysis.
 
-Live at [nscstats.com](https://nscstats.com)
+Live soon at [nscstats.com](https://nscstats.com)
 
 ## Quick Start
 
@@ -10,8 +10,6 @@ Live at [nscstats.com](https://nscstats.com)
 npm install
 npm run dev
 ```
-
-Open http://localhost:5173
 
 ## Build & Deploy
 
