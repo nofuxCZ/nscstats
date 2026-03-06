@@ -1,0 +1,87 @@
+# Scrape from a given edition onwards (catch up with new editions)
+# Manual trigger only. Merges new editions into existing history.
+
+name: "Scrape Latest"
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_edition:
+        description: 'Scrape from this edition onwards (e.g. "245" scrapes 245, 246, 247...)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Check for existing history
+        run: |
+          if [ -f scripts/data/nsc_all_history.json ]; then
+            echo "✅ Found existing history — will merge incrementally"
+            python3 -c "
+          import json
+          with open('scripts/data/nsc_all_history.json') as f:
+              d = json.load(f)
+          eds = sorted(set(r['Edition'] for r in d))
+          print(f'  Existing: {len(d)} rows, {len(eds)} editions (#{eds[0]}-#{eds[-1]})')
+          "
+          else
+            echo "⚠️ No existing history — run Full Rebuild first for best results"
+            mkdir -p scripts/data
+          fi
+
+      - name: Scrape from edition ${{ inputs.from_edition }} onwards
+        run: |
+          cd scripts
+          python nsc_scraper.py --from ${{ inputs.from_edition }} --output ./data --delay 0.8
+
+      - name: Generate site data
+        run: |
+          cd scripts
+          python generate_site_data.py \
+            --history ./data/nsc_all_history.json \
+            --output ../public/data/
+
+      - name: Show results
+        run: |
+          echo "=== Scraped from #${{ inputs.from_edition }} ==="
+          ls -lh public/data/
+          python3 -c "
+          import json
+          with open('scripts/data/nsc_all_history.json') as f:
+              d = json.load(f)
+          eds = sorted(set(r['Edition'] for r in d))
+          print(f'History now: {len(d)} rows, {len(eds)} editions (#{eds[0]}-#{eds[-1]})')
+          "
+
+      - name: Commit and push
+        run: |
+          git config user.name "NSC Stats Bot"
+          git config user.email "nscstats-bot@users.noreply.github.com"
+          git add public/data/ scripts/data/nsc_all_history.json
+          if git diff --cached --quiet; then
+            echo "No changes detected"
+          else
+            FROM="${{ inputs.from_edition }}"
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "📥 Scrape from #${FROM}: ${TIMESTAMP}"
+            git push
+            echo "✅ Pushed — Vercel will auto-deploy"
+          fi

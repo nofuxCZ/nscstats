@@ -1,21 +1,18 @@
-# Full NSC Wiki Scrape + Site Data Regeneration
-# Runs automatically every Monday. Can also be triggered manually.
-# Vercel auto-deploys on each commit.
+# Regenerate site data files from existing history (no wiki scraping)
+# Use after updating generate_site_data.py to apply new stats/fixes.
 
-name: "Full Rebuild"
+name: "Regenerate Data"
 
 on:
-  schedule:
-    - cron: '0 4 * * 1'   # Every Monday at 04:00 UTC
-  workflow_dispatch:        # Manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  regenerate:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -29,11 +26,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Scrape wiki (full rebuild)
+      - name: Check history exists
         run: |
-          mkdir -p scripts/data
-          cd scripts
-          python nsc_scraper.py --full-rebuild --output ./data --delay 0.8
+          if [ ! -f scripts/data/nsc_all_history.json ]; then
+            echo "❌ No history file found at scripts/data/nsc_all_history.json"
+            echo "   Run 'Full Rebuild' first to create the history file."
+            exit 1
+          fi
+          python3 -c "
+          import json
+          with open('scripts/data/nsc_all_history.json') as f:
+              d = json.load(f)
+          eds = sorted(set(r['Edition'] for r in d))
+          print(f'History: {len(d)} rows, {len(eds)} editions (#{eds[0]}-#{eds[-1]})')
+          "
 
       - name: Generate site data
         run: |
@@ -44,9 +50,8 @@ jobs:
 
       - name: Show results
         run: |
-          echo "=== Data files ==="
+          echo "=== Regenerated data files ==="
           ls -lh public/data/
-          echo ""
           python3 -c "
           import json
           with open('public/data/homepage.json') as f:
@@ -62,12 +67,12 @@ jobs:
         run: |
           git config user.name "NSC Stats Bot"
           git config user.email "nscstats-bot@users.noreply.github.com"
-          git add public/data/ scripts/data/nsc_all_history.json
+          git add public/data/
           if git diff --cached --quiet; then
             echo "No changes detected"
           else
             TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-            git commit -m "🔄 Full rebuild: ${TIMESTAMP}"
+            git commit -m "🔧 Regenerate data: ${TIMESTAMP}"
             git push
-            echo "✅ Data committed and pushed — Vercel will auto-deploy"
+            echo "✅ Pushed — Vercel will auto-deploy"
           fi

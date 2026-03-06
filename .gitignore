@@ -5,3 +5,5 @@ dist/
 *.log
 .DS_Store
 scripts/scraper_output/
+scripts/data/*.xlsx
+# scripts/data/nsc_all_history.json is committed for incremental scraping

@@ -110,7 +110,7 @@ export default function NationPage() {
               <St v={p.qr != null ? String(p.qr) + "%" : null} l="QF Rate" c={p.qr != null ? (p.qr >= 70 ? "var(--green)" : p.qr >= 50 ? "var(--gold)" : "var(--red)") : "var(--text-30)"} sub={String(p.sfQ || 0) + "/" + String(p.sf || 0)} />
               <St v={p.bs} l="Best" c="var(--text-45)" sub="GF streak" />
               <St v={p.gl || 0} l="Last" c="var(--red)" sub="GF places" />
-              <St v={p.sfD || 0} l="Last" c="var(--text-45)" sub="SF places" />
+              <St v={p.sfD || 0} l="SF" c="var(--text-45)" sub="Eliminations" />
             </div>
             {badges.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 16 }}>
