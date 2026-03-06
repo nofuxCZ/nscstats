@@ -126,6 +126,13 @@ def main():
         ed=r["Edition"]; pl=r.get("Place")
         if ed and pl: max_gf_place[ed]=max(max_gf_place.get(ed,0),pl)
 
+    max_sf_place = {}
+    for r in sf:
+        ed=r["Edition"]; sub=r["Subevent"]; pl=r.get("Place")
+        if ed and pl:
+            k=(ed,sub)
+            max_sf_place[k]=max(max_sf_place.get(k,0),pl)
+
     # Build REJU qualifier lookup from edition data
     reju_quals = defaultdict(int)  # nation -> count of REJU qualifications
     for ed in sorted(editions_d):
@@ -150,6 +157,7 @@ def main():
         wins_n=sum(1 for p in gf_places if p==1)
         sf_q=sum(1 for r in n_sf if r["Nation"] in gf_nations_by_ed.get(r["Edition"],set()))
         gf_last=sum(1 for r in n_gf if r.get("Place") and r.get("Place")==max_gf_place.get(r["Edition"],0))
+        sf_last=sum(1 for r in n_sf if r.get("Place") and r.get("Place")==max_sf_place.get((r["Edition"],r["Subevent"]),0))
         gf_eds=sorted(set(r["Edition"] for r in n_gf))
         bs=cs=0
         for ie in range(len(gf_eds)):
@@ -190,7 +198,7 @@ def main():
         profiles[nation]={"n":nation,"gf":len(n_gf),"sf":len(n_sf),"sfQ":sf_q,"sfD":len(n_sf)-sf_q,
             "qr":round(sf_q/len(n_sf)*100,1) if n_sf else None,"te":len(all_eds),"fe":all_eds[0],"le":all_eds[-1],
             "w":wins_n,"we":we,"t3":sum(1 for p in gf_places if p<=3),"t6":sum(1 for p in gf_places if p<=6),
-            "t10":sum(1 for p in gf_places if p<=10),"gl":gf_last,
+            "t10":sum(1 for p in gf_places if p<=10),"gl":gf_last,"sfl":sf_last,
             "bp":min(gf_places) if gf_places else None,"wp":max(gf_places) if gf_places else None,
             "bpts":max(gf_points) if gf_points else None,
             "ap":round(sum(gf_points)/len(gf_points),1) if gf_points else None,

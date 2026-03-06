@@ -86,6 +86,7 @@ export default function DatabasePage() {
   var [selNations, setSelNations] = useState([]);
   var [multiSort, setMultiSort] = useState(false);
   var [selArtists, setSelArtists] = useState([]);
+  var [selSongs, setSelSongs] = useState([]);
   var [edFrom, setEdFrom] = useState("");
   var [edTo, setEdTo] = useState("");
 
@@ -98,7 +99,7 @@ export default function DatabasePage() {
   }, []);
 
   var PS = 50;
-  var qs = q.toLowerCase().trim();
+  var qs = q.trim();
 
   var nations = useMemo(function() {
     if (!d) return [];
@@ -108,6 +109,11 @@ export default function DatabasePage() {
   var artists = useMemo(function() {
     if (!d) return [];
     return Array.from(new Set(d.map(function(r) { return r.artist; }).filter(Boolean))).sort();
+  }, [d]);
+
+  var songs = useMemo(function() {
+    if (!d) return [];
+    return Array.from(new Set(d.map(function(r) { return r.song; }).filter(Boolean))).sort();
   }, [d]);
 
   var toggleNation = function(n) {
@@ -124,17 +130,40 @@ export default function DatabasePage() {
     setPg(0);
   };
 
+  var toggleSong = function(s) {
+    setSelSongs(function(prev) {
+      return prev.indexOf(s) >= 0 ? prev.filter(function(x) { return x !== s; }) : prev.concat([s]);
+    });
+    setPg(0);
+  };
+
+  // Search: "quoted" = exact match, unquoted = substring
+  var matchFn = useMemo(function() {
+    if (!qs) return null;
+    var isExact = qs.length >= 2 && qs.charAt(0) === '"' && qs.charAt(qs.length - 1) === '"';
+    if (isExact) {
+      var term = qs.slice(1, -1).toLowerCase();
+      return function(r) {
+        return (r.artist || "").toLowerCase() === term || (r.song || "").toLowerCase() === term || (r.nation || "").toLowerCase() === term;
+      };
+    } else {
+      var lq = qs.toLowerCase();
+      return function(r) {
+        return (r.artist || "").toLowerCase().includes(lq) || (r.song || "").toLowerCase().includes(lq) || (r.nation || "").toLowerCase().includes(lq);
+      };
+    }
+  }, [qs]);
+
   var fl = useMemo(function() {
     if (!d) return [];
     var rows = d;
     if (subFilter !== "All") rows = rows.filter(function(r) { return subFilter === "SF" ? (r.sub === "SF1" || r.sub === "SF2") : r.sub === subFilter; });
     if (selNations.length > 0) rows = rows.filter(function(r) { return selNations.indexOf(r.nation) >= 0; });
     if (selArtists.length > 0) rows = rows.filter(function(r) { return selArtists.indexOf(r.artist) >= 0; });
+    if (selSongs.length > 0) rows = rows.filter(function(r) { return selSongs.indexOf(r.song) >= 0; });
     if (edFrom) rows = rows.filter(function(r) { return r.edition >= Number(edFrom); });
     if (edTo) rows = rows.filter(function(r) { return r.edition <= Number(edTo); });
-    if (qs) rows = rows.filter(function(r) {
-      return (r.artist || "").toLowerCase().includes(qs) || (r.song || "").toLowerCase().includes(qs) || (r.nation || "").toLowerCase().includes(qs);
-    });
+    if (matchFn) rows = rows.filter(matchFn);
     // Multi-column sort
     return rows.slice().sort(function(a, b) {
       for (var s = 0; s < sorts.length; s++) {
@@ -149,7 +178,7 @@ export default function DatabasePage() {
       }
       return 0;
     });
-  }, [d, qs, sorts, subFilter, selNations, selArtists, edFrom, edTo]);
+  }, [d, matchFn, sorts, subFilter, selNations, selArtists, selSongs, edFrom, edTo]);
 
   if (!d) return <Loader t="Loading 18,807 entries..." />;
 
@@ -199,9 +228,11 @@ export default function DatabasePage() {
 
   var hl = function(t) {
     if (!qs || !t) return t;
-    var i = t.toLowerCase().indexOf(qs);
+    var isExact = qs.length >= 2 && qs.charAt(0) === '"' && qs.charAt(qs.length - 1) === '"';
+    var term = isExact ? qs.slice(1, -1) : qs;
+    var i = t.toLowerCase().indexOf(term.toLowerCase());
     if (i === -1) return t;
-    return <>{t.slice(0, i)}<span style={{ background: "var(--gold-glow-12)", borderRadius: 2, padding: "0 1px" }}>{t.slice(i, i + qs.length)}</span>{t.slice(i + qs.length)}</>;
+    return <>{t.slice(0, i)}<span style={{ background: "var(--gold-glow-12)", borderRadius: 2, padding: "0 1px" }}>{t.slice(i, i + term.length)}</span>{t.slice(i + term.length)}</>;
   };
 
   var xCSV = function() {
@@ -214,7 +245,7 @@ export default function DatabasePage() {
     var a = document.createElement("a"); a.href = URL.createObjectURL(bl); a.download = "nsc_export.csv"; a.click();
   };
 
-  var hasFilters = subFilter !== "All" || selNations.length > 0 || selArtists.length > 0 || edFrom || edTo;
+  var hasFilters = subFilter !== "All" || selNations.length > 0 || selArtists.length > 0 || selSongs.length > 0 || edFrom || edTo;
   var sortDesc = sorts.map(function(s) { return s.col + (s.dir === "asc" ? "\u2191" : "\u2193"); }).join(" \u2192 ");
 
   return (
@@ -235,7 +266,7 @@ export default function DatabasePage() {
       <PL />
 
       {/* Search */}
-      <input type="text" placeholder="Search by artist, song, or nation…" value={q}
+      <input type="text" placeholder={'Search artist, song, or nation\u2026 Use "quotes" for exact match'} value={q}
         onChange={function(e) { setQ(e.target.value); setPg(0); }}
         style={{
           width: "100%", padding: "12px 16px", borderRadius: 10, fontSize: 15, fontWeight: 500,
@@ -248,6 +279,7 @@ export default function DatabasePage() {
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12, alignItems: "flex-end" }}>
         <MultiSelect items={nations} selected={selNations} onToggle={toggleNation} label="Nations" color="var(--blue)" />
         <MultiSelect items={artists} selected={selArtists} onToggle={toggleArtist} label="Artists" color="var(--purple)" />
+        <MultiSelect items={songs} selected={selSongs} onToggle={toggleSong} label="Songs" color="var(--green)" />
 
         <div>
           <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Edition Range"}</div>
@@ -273,7 +305,7 @@ export default function DatabasePage() {
         </div>
 
         {hasFilters && (
-          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setSelArtists([]); setEdFrom(""); setEdTo(""); setPg(0); }}>
+          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setSelArtists([]); setSelSongs([]); setEdFrom(""); setEdTo(""); setPg(0); }}>
             {"Clear Filters"}
           </button>
         )}
