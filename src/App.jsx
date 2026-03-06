@@ -32,6 +32,7 @@ const NationPage = lazy(() => import('./pages/NationPage'));
 const RecordsPage = lazy(() => import('./pages/RecordsPage'));
 const VotingPage = lazy(() => import('./pages/VotingPage'));
 const VotingScoreboard = lazy(() => import('./pages/VotingScoreboard'));
+const RosterPage = lazy(() => import('./pages/RosterPage'));
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/records" element={<RecordsPage />} />
             <Route path="/voting" element={<VotingPage />} />
             <Route path="/scoreboard" element={<VotingScoreboard />} />
+            <Route path="/roster" element={<RosterPage />} />
           </Routes>
           </Suspense>
         </ErrorBoundary>

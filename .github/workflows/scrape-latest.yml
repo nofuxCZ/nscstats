@@ -57,7 +57,7 @@ jobs:
           cd scripts
           python generate_site_data.py \
             --history ./data/nsc_all_history.json \
-            --output ../public/data/
+            --roster ./data/NSCRoster.xlsx --output ../public/data/
 
       - name: Show results
         run: |

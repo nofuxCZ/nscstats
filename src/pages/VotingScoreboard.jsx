@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
 import { Loader } from '../components/Shared';
 
-var SUB_NAMES = ["GF + WL Jury", "SF + REJU"];
+var SUB_NAMES = { 0: "Grand Final", 1: "Semifinal 1", 2: "Semifinal 2", 3: "WL Jury", 4: "REJU 1", 5: "REJU 2" };
+var SUB_SHORT = { 0: "GF", 1: "SF1", 2: "SF2", 3: "WL", 4: "R1", 5: "R2" };
 
 export default function VotingScoreboard() {
   var [D, setD] = useState(null);
@@ -126,7 +127,7 @@ export default function VotingScoreboard() {
             </select>
             <div style={{ display: "flex", gap: 4 }}>
               {availSubs.map(function(s) {
-                return <button key={s} className={"fb " + (sub === s ? "on" : "")} onClick={function() { setSub(s); }}>{SUB_NAMES[s] || String(s)}</button>;
+                return <button key={s} className={"fb " + (sub === s ? "on" : "")} onClick={function() { setSub(s); }}>{SUB_SHORT[s] || String(s)}</button>;
               })}
             </div>
             <span style={{ fontSize: 13, color: "var(--text-30)" }}>
@@ -195,7 +196,7 @@ export default function VotingScoreboard() {
             <div>
               <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent"}</div>
               <div style={{ display: "flex", gap: 4 }}>
-                {[[-1, "All"], [0, "GF"], [1, "SF"]].map(function(pair) {
+                {[[-1, "All"], [0, "GF"], [3, "WL"], [1, "SF1"], [2, "SF2"], [4, "R1"], [5, "R2"]].map(function(pair) {
                   return <button key={pair[0]} className={"fb " + (selCat === pair[0] ? "on" : "")} onClick={function() { setSelCat(pair[0]); }}>{pair[1]}</button>;
                 })}
               </div>

@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate NSC site data files")
     parser.add_argument("--history", required=True, help="Path to nsc_all_history.json from scraper")
     parser.add_argument("--votes", default=None, help="Path to NSC_Votes_Unpivot.xlsx (optional)")
+    parser.add_argument("--roster", default=None, help="Path to NSCRoster.xlsx (optional, for owner mapping)")
     parser.add_argument("--output", default="../public/data/", help="Output directory")
     args = parser.parse_args()
 
@@ -226,9 +227,45 @@ def main():
             votes_raw.append((int(row[0]),str(row[1] or "").strip(),str(row[2] or "").strip(),str(row[3] or "").strip(),int(row[4]) if row[4] else 0))
         wb.close()
 
+        # Subevent codes: 0=GF, 1=S1, 2=S2, 3=WL, 4=R1, 5=R2
+        sub_code={"GF":0,"S1":1,"S2":2,"WL":3,"R1":4,"R2":5}
+        # Map vote subevent to history subevent (for participant check)
         sub_v2h={"GF":"GF","S1":"SF1","S2":"SF2","WL":"GF","R1":"SF1","R2":"SF2"}
         part_set=set()
         for r in nsc: part_set.add((r["Edition"],r["Subevent"],r["Nation"]))
+
+        # Load roster for owner mapping if available
+        roster_path = args.roster if hasattr(args, 'roster') and args.roster else None
+        owner_map = {}  # nation_name -> owner
+        owner_aliases = {}  # owner -> [nation_names]
+        if roster_path and os.path.exists(roster_path):
+            import openpyxl as oxl2
+            rwb = oxl2.load_workbook(roster_path, read_only=True)
+            rws = rwb[rwb.sheetnames[0]]
+            for ri, rrow in enumerate(rws.iter_rows(values_only=True)):
+                if ri == 0: continue
+                if not rrow[0]: continue
+                nation_r, owner_r = str(rrow[0]).strip(), str(rrow[2] or "").strip()
+                if owner_r:
+                    owner_map[nation_r] = owner_r
+                    if owner_r not in owner_aliases: owner_aliases[owner_r] = []
+                    owner_aliases[owner_r].append(nation_r)
+            rwb.close()
+            print(f"  Roster loaded: {len(owner_map)} nations, {len(owner_aliases)} owners")
+
+        # Build name normalization map (case-insensitive -> canonical)
+        canon = {}
+        for r in nsc:
+            n = r.get("Nation","")
+            if n: canon[n.lower()] = n
+        # Also add roster names
+        for n in owner_map:
+            if n.lower() not in canon: canon[n.lower()] = n
+        def norm(name):
+            return canon.get(name.lower(), name) if name else name
+
+        # Normalize names in votes
+        votes_raw = [(ed, sub, norm(voter), norm(nation), pts) for ed, sub, voter, nation, pts in votes_raw]
 
         vote_names=sorted(set(v[2] for v in votes_raw if v[2]!="Bonus")|set(v[3] for v in votes_raw if v[2]!="Bonus"))
         vn2i={n:i for i,n in enumerate(vote_names)}
@@ -240,7 +277,7 @@ def main():
         rounds=[]
         for (ed,sub,voter),vl in vg.items():
             hs=sub_v2h.get(sub,sub); isp=(ed,hs,voter) in part_set
-            cat=0 if sub in("GF","WL") else 1
+            cat=sub_code.get(sub, 0)
             vi=vn2i.get(voter,-1)
             if vi<0: continue
             pairs=[]
@@ -265,11 +302,54 @@ def main():
         love_list=sorted([[k[0],k[1],v[0],v[1]] for k,v in love.items() if v[1]>=3], key=lambda x:-x[2])[:300]
         ed_range=[min(v[0] for v in votes_raw),max(v[0] for v in votes_raw)]
 
+        # Build owner merge groups for voting similarity
+        owner_groups = []
+        if owner_aliases:
+            for owner, nations in owner_aliases.items():
+                indices = [vn2i[n] for n in nations if n in vn2i]
+                if len(indices) > 1:
+                    owner_groups.append(indices)
+
         with open(os.path.join(args.output, "voting.json"), "w", encoding="utf-8") as f:
-            json.dump({"r":rounds,"n":vote_names,"l":love_list,"e":ed_range}, f, ensure_ascii=False, separators=(",",":"))
-        print(f"  voting.json: {len(rounds)} rounds, {len(vote_names)} nations")
+            json.dump({"r":rounds,"n":vote_names,"l":love_list,"e":ed_range,"og":owner_groups}, f, ensure_ascii=False, separators=(",",":"))
+        print(f"  voting.json: {len(rounds)} rounds, {len(vote_names)} nations, {len(owner_groups)} owner groups")
     else:
         print(f"  voting.json: SKIPPED (no votes file)")
+
+    # ── roster.json (only if roster file provided) ──
+    if args.roster and os.path.exists(args.roster):
+        import openpyxl as oxl3
+        rwb = oxl3.load_workbook(args.roster, read_only=True)
+        rws = rwb[rwb.sheetnames[0]]
+        roster = []
+        for ri, rrow in enumerate(rws.iter_rows(values_only=True)):
+            if ri == 0: continue
+            if not rrow[0]: continue
+            nation_r = str(rrow[0]).strip()
+            status_r = str(rrow[1] or "").strip()
+            owner_r = str(rrow[2] or "").strip()
+            notes_r = str(rrow[3] or "").strip() if rrow[3] else ""
+            st = "current" if "urrent" in status_r else "wl" if "WL" in status_r.upper() else "defunct"
+            latest = notes_r if notes_r else nation_r
+            roster.append({"n": nation_r, "s": st, "o": owner_r, "ln": latest})
+        rwb.close()
+        # Build owner -> latest nation map
+        ol = {}
+        for r in roster:
+            if r["o"] and r["s"] == "current": ol[r["o"]] = r["n"]
+        for r in roster:
+            if r["o"] and r["o"] not in ol: ol[r["o"]] = r["ln"]
+        # Owner -> nations
+        on = {}
+        for r in roster:
+            if r["o"]:
+                if r["o"] not in on: on[r["o"]] = []
+                on[r["o"]].append(r["n"])
+        with open(os.path.join(args.output, "roster.json"), "w", encoding="utf-8") as f:
+            json.dump({"r": roster, "ol": ol, "on": on}, f, ensure_ascii=False, separators=(",",":"))
+        print(f"  roster.json: {len(roster)} nations ({sum(1 for r in roster if r['s']=='current')} current)")
+    else:
+        print(f"  roster.json: SKIPPED (no roster file)")
 
     total = sum(os.path.getsize(os.path.join(args.output, f)) for f in os.listdir(args.output) if f.endswith(".json"))
     print(f"\nTotal data: {total/1024:.0f} KB ({total/1024/1024:.1f} MB)")

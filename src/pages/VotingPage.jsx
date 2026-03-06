@@ -103,16 +103,20 @@ export default function VotingPage() {
   }, [D]);
 
   const MAX = 448;
-  const cats = catFilter === "gf" ? [0] : catFilter === "sf" ? [1] : [0, 1];
+  // Subevent codes: 0=GF, 1=S1, 2=S2, 3=WL, 4=R1, 5=R2
+  const ALL_CATS = [0, 1, 2, 3, 4, 5];
+  const GF_CATS = [0, 3];
+  const SF_CATS = [1, 2, 4, 5];
+  const cats = catFilter === "gf" ? GF_CATS : catFilter === "sf" ? SF_CATS : ALL_CATS;
 
   const csim = useCallback((v1, v2) => {
     let ts = 0, cnt = 0;
     for (const ed of AE) {
       if (ed < edFrom || ed > edTo) continue;
       if (catFilter === "all") {
-        // Average GF+SF within same edition into one score
+        // Average all subevents within same edition into one score
         let edScore = 0, edFound = 0;
-        for (const cat of [0, 1]) {
+        for (const cat of ALL_CATS) {
           const m1 = RM.get(ed + "_" + cat + "_" + v1);
           const m2 = RM.get(ed + "_" + cat + "_" + v2);
           if (!m1 || !m2) continue;
@@ -122,7 +126,6 @@ export default function VotingPage() {
         }
         if (edFound > 0) { ts += edScore / edFound; cnt++; }
       } else {
-        // Single category: each subevent counted separately
         for (const cat of cats) {
           const m1 = RM.get(ed + "_" + cat + "_" + v1);
           const m2 = RM.get(ed + "_" + cat + "_" + v2);
@@ -162,7 +165,7 @@ export default function VotingPage() {
         if (ed < edFrom || ed > edTo) continue;
         if (catFilter === "all") {
           var edVoters = new Set();
-          for (const cat of [0, 1]) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) edVoters.add(vi); }
+          for (const cat of ALL_CATS) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) edVoters.add(vi); }
           for (const vi of edVoters) active.set(vi, (active.get(vi) || 0) + 1);
         } else {
           for (const cat of cats) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) active.set(vi, (active.get(vi) || 0) + 1); }

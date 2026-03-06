@@ -1,0 +1,2146 @@
+{
+  "highestScores": [
+    {
+      "edition": 88,
+      "nation": "Rumia",
+      "artist": "Fiddler's Green",
+      "song": "Yindy",
+      "place": 1,
+      "points": 260.0
+    },
+    {
+      "edition": 195,
+      "nation": "Rahasia-Diati",
+      "artist": "Jadudah",
+      "song": "Love You (When You're a Mess)",
+      "place": 1,
+      "points": 257.0
+    },
+    {
+      "edition": 79,
+      "nation": "10 Regions of Mobius",
+      "artist": "Of Monsters and Men",
+      "song": "Little Talks",
+      "place": 1,
+      "points": 252.0
+    },
+    {
+      "edition": 58,
+      "nation": "Viola Per Sempre",
+      "artist": "Christina Perri",
+      "song": "Jar of Hearts",
+      "place": 1,
+      "points": 248.0
+    },
+    {
+      "edition": 25,
+      "nation": "Belvist",
+      "artist": "Siddharta",
+      "song": "Insane",
+      "place": 1,
+      "points": 245.0
+    },
+    {
+      "edition": 152,
+      "nation": "Calypso",
+      "artist": "Cosmo Sheldrake",
+      "song": "Come Along",
+      "place": 1,
+      "points": 243.0
+    },
+    {
+      "edition": 201,
+      "nation": "Aimūlli",
+      "artist": "Mike Oldfield",
+      "song": "To France",
+      "place": 1,
+      "points": 240.0
+    },
+    {
+      "edition": 27,
+      "nation": "Spila",
+      "artist": "Amy Macdonald",
+      "song": "This Is the Life",
+      "place": 1,
+      "points": 239.0
+    },
+    {
+      "edition": 193,
+      "nation": "Cydoni-Gibberia",
+      "artist": "Carson Coma",
+      "song": "Pók",
+      "place": 1,
+      "points": 239.0
+    },
+    {
+      "edition": 132,
+      "nation": "Hypjø",
+      "artist": "Purity Ring",
+      "song": "begin again",
+      "place": 1,
+      "points": 237.0
+    },
+    {
+      "edition": 69,
+      "nation": "Mooseland",
+      "artist": "Adele",
+      "song": "Someone Like You",
+      "place": 1,
+      "points": 236.0
+    },
+    {
+      "edition": 143,
+      "nation": "Begonia",
+      "artist": "Huntza",
+      "song": "Aldapan gora",
+      "place": 1,
+      "points": 235.0
+    },
+    {
+      "edition": 203,
+      "nation": "Ugaly",
+      "artist": "Ragnar Roffbeard",
+      "song": "Anthem of Roffbeard the Mighty",
+      "place": 1,
+      "points": 234.0
+    },
+    {
+      "edition": 115,
+      "nation": "New Acadia",
+      "artist": "The Family Crest",
+      "song": "North",
+      "place": 1,
+      "points": 230.0
+    },
+    {
+      "edition": 209,
+      "nation": "Šilček",
+      "artist": "Confidence Man",
+      "song": "Holiday",
+      "place": 1,
+      "points": 230.0
+    },
+    {
+      "edition": 219,
+      "nation": "Halito",
+      "artist": "Emei",
+      "song": "That Girl",
+      "place": 1,
+      "points": 230.0
+    },
+    {
+      "edition": 106,
+      "nation": "Carpatina",
+      "artist": "Indila",
+      "song": "Dernière danse",
+      "place": 1,
+      "points": 229.0
+    },
+    {
+      "edition": 136,
+      "nation": "Waiting Iist of Shelley & Nici, Tanner & Josh, Tiffany & Krista and Denise & James Earl",
+      "artist": "Onuka",
+      "song": "1986",
+      "place": 1,
+      "points": 229.0
+    },
+    {
+      "edition": 219,
+      "nation": "New Bander State",
+      "artist": "Azahriah",
+      "song": "introvertált dal",
+      "place": 2,
+      "points": 229.0
+    },
+    {
+      "edition": 129,
+      "nation": "Hypjø",
+      "artist": "Susanne Sundfør",
+      "song": "Accelerate",
+      "place": 1,
+      "points": 226.0
+    }
+  ],
+  "topArtists": [
+    {
+      "artist": "Lady Gaga",
+      "count": 18
+    },
+    {
+      "artist": "Florence + the Machine",
+      "count": 13
+    },
+    {
+      "artist": "Marina and the Diamonds",
+      "count": 12
+    },
+    {
+      "artist": "Within Temptation",
+      "count": 11
+    },
+    {
+      "artist": "AURORA",
+      "count": 10
+    },
+    {
+      "artist": "Britney Spears",
+      "count": 10
+    },
+    {
+      "artist": "Ellie Goulding",
+      "count": 10
+    },
+    {
+      "artist": "Nightwish",
+      "count": 9
+    },
+    {
+      "artist": "Kelly Clarkson",
+      "count": 9
+    },
+    {
+      "artist": "Kylie Minogue",
+      "count": 9
+    },
+    {
+      "artist": "Sia",
+      "count": 8
+    },
+    {
+      "artist": "Rihanna",
+      "count": 8
+    },
+    {
+      "artist": "Cascada",
+      "count": 8
+    },
+    {
+      "artist": "P!nk",
+      "count": 8
+    },
+    {
+      "artist": "Lana Del Rey",
+      "count": 8
+    },
+    {
+      "artist": "The Veronicas",
+      "count": 7
+    },
+    {
+      "artist": "Avril Lavigne",
+      "count": 7
+    },
+    {
+      "artist": "Celine Dion",
+      "count": 7
+    },
+    {
+      "artist": "September",
+      "count": 7
+    },
+    {
+      "artist": "Nelly Furtado",
+      "count": 7
+    },
+    {
+      "artist": "Carrie Underwood",
+      "count": 7
+    },
+    {
+      "artist": "The Saturdays",
+      "count": 7
+    },
+    {
+      "artist": "Inna",
+      "count": 7
+    },
+    {
+      "artist": "Eivør",
+      "count": 7
+    },
+    {
+      "artist": "Tove Lo",
+      "count": 7
+    },
+    {
+      "artist": "iamamiwhoami",
+      "count": 7
+    },
+    {
+      "artist": "Madonna",
+      "count": 6
+    },
+    {
+      "artist": "Shakira",
+      "count": 6
+    },
+    {
+      "artist": "Laleh",
+      "count": 6
+    },
+    {
+      "artist": "Christina Aguilera",
+      "count": 6
+    }
+  ],
+  "allWinners": [
+    {
+      "edition": 1,
+      "nation": "Arjastan",
+      "artist": "Belén Arjona",
+      "song": "No habrá más perdón",
+      "points": 40.0
+    },
+    {
+      "edition": 2,
+      "nation": "Escotia",
+      "artist": "Natasha Bedingfield",
+      "song": "Unwritten",
+      "points": 108.0
+    },
+    {
+      "edition": 3,
+      "nation": "Arjastan",
+      "artist": "Tata Young",
+      "song": "Sexy, Naughty, Bitchy",
+      "points": 83.0
+    },
+    {
+      "edition": 4,
+      "nation": "Hibernia",
+      "artist": "Youssou N'Dour & Neneh Cherry",
+      "song": "7 Seconds",
+      "points": 84.0
+    },
+    {
+      "edition": 5,
+      "nation": "Bokia",
+      "artist": "Lana & Luka",
+      "song": "Prava Ljubav",
+      "points": 181.0
+    },
+    {
+      "edition": 6,
+      "nation": "Lolee",
+      "artist": "Velvet",
+      "song": "Fix Me",
+      "points": 135.0
+    },
+    {
+      "edition": 7,
+      "nation": "Gabriel",
+      "artist": "Vanessa Amorosi",
+      "song": "Absolutely Everybody",
+      "points": 149.0
+    },
+    {
+      "edition": 8,
+      "nation": "Astoria",
+      "artist": "Kelly Clarkson",
+      "song": "Behind These Hazel Eyes",
+      "points": 157.0
+    },
+    {
+      "edition": 9,
+      "nation": "Alinta",
+      "artist": "Evanescence",
+      "song": "My Immortal",
+      "points": 151.0
+    },
+    {
+      "edition": 10,
+      "nation": "Astoria",
+      "artist": "Mecano",
+      "song": "Hijo de la Luna",
+      "points": 182.0
+    },
+    {
+      "edition": 11,
+      "nation": "Spila",
+      "artist": "Anastacia",
+      "song": "Left Outside Alone",
+      "points": 145.0
+    },
+    {
+      "edition": 12,
+      "nation": "Vorhota",
+      "artist": "Mylène Farmer",
+      "song": "C'est une belle journée",
+      "points": 183.0
+    },
+    {
+      "edition": 13,
+      "nation": "Gabriel",
+      "artist": "Maroon 5",
+      "song": "Wake Up Call",
+      "points": 160.0
+    },
+    {
+      "edition": 14,
+      "nation": "Scorpionia",
+      "artist": "Crystal",
+      "song": "Hív a végtelen",
+      "points": 216.0
+    },
+    {
+      "edition": 15,
+      "nation": "Prasia",
+      "artist": "Sertab Erener",
+      "song": "Here I Am",
+      "points": 170.0
+    },
+    {
+      "edition": 16,
+      "nation": "Calypso",
+      "artist": "Bhangra",
+      "song": "My Own Way",
+      "points": 179.0
+    },
+    {
+      "edition": 17,
+      "nation": "Eurora",
+      "artist": "Cascada",
+      "song": "What Hurts the Most",
+      "points": 154.0
+    },
+    {
+      "edition": 18,
+      "nation": "Prasia",
+      "artist": "Loona",
+      "song": "Rhythm of the Night",
+      "points": 182.0
+    },
+    {
+      "edition": 19,
+      "nation": "Ugaly",
+      "artist": "Globus",
+      "song": "Europa",
+      "points": 155.0
+    },
+    {
+      "edition": 20,
+      "nation": "Alinta",
+      "artist": "Nami Tamaki",
+      "song": "Reason",
+      "points": 170.0
+    },
+    {
+      "edition": 21,
+      "nation": "Jastistia",
+      "artist": "Da Buzz",
+      "song": "Dangerous",
+      "points": 187.0
+    },
+    {
+      "edition": 22,
+      "nation": "Maccha-Brugia",
+      "artist": "Cobra Starship",
+      "song": "The City Is at War",
+      "points": 180.0
+    },
+    {
+      "edition": 23,
+      "nation": "Maccha-Brugia",
+      "artist": "Crazy Loop",
+      "song": "Mm Ma Ma",
+      "points": 208.0
+    },
+    {
+      "edition": 24,
+      "nation": "Vorhota",
+      "artist": "Benassi Bros.",
+      "song": "Hit My Heart",
+      "points": 169.0
+    },
+    {
+      "edition": 25,
+      "nation": "Belvist",
+      "artist": "Siddharta",
+      "song": "Insane",
+      "points": 245.0
+    },
+    {
+      "edition": 26,
+      "nation": "Prasia",
+      "artist": "Kate Voegele",
+      "song": "Only Fooling Myself",
+      "points": 184.0
+    },
+    {
+      "edition": 27,
+      "nation": "Spila",
+      "artist": "Amy Macdonald",
+      "song": "This Is the Life",
+      "points": 239.0
+    },
+    {
+      "edition": 28,
+      "nation": "Noizeland",
+      "artist": "Mega Mindy",
+      "song": "Mega Mindy Tijd",
+      "points": 225.0
+    },
+    {
+      "edition": 29,
+      "nation": "Scorpionia",
+      "artist": "Lara Fabian",
+      "song": "I Will Love Again",
+      "points": 198.0
+    },
+    {
+      "edition": 30,
+      "nation": "Tohru",
+      "artist": "Jenifer",
+      "song": "Si c'est une île",
+      "points": 219.0
+    },
+    {
+      "edition": 31,
+      "nation": "St. Lotus",
+      "artist": "Polarkreis 18",
+      "song": "Allein Allein",
+      "points": 203.0
+    },
+    {
+      "edition": 32,
+      "nation": "Begonia",
+      "artist": "Lauri Tähkä",
+      "song": "Pauhaava Sydän",
+      "points": 167.0
+    },
+    {
+      "edition": 33,
+      "nation": "Vorhota",
+      "artist": "Laura Pausini",
+      "song": "Surrender",
+      "points": 203.0
+    },
+    {
+      "edition": 34,
+      "nation": "Swelatie",
+      "artist": "Kelly Clarkson",
+      "song": "My Life Would Suck Without You",
+      "points": 183.0
+    },
+    {
+      "edition": 35,
+      "nation": "Prasia",
+      "artist": "Sash! feat. Stunt",
+      "song": "Raindrops",
+      "points": 202.0
+    },
+    {
+      "edition": 36,
+      "nation": "Belvist",
+      "artist": "Keane",
+      "song": "Crystal Ball",
+      "points": 182.0
+    },
+    {
+      "edition": 37,
+      "nation": "Reym-L-Dneurb",
+      "artist": "Goldfrapp",
+      "song": "Strict Machine",
+      "points": 172.0
+    },
+    {
+      "edition": 38,
+      "nation": "Bokia",
+      "artist": "Freemasons feat. Sophie Ellis-Bextor",
+      "song": "Heartbreak (Make Me a Dancer)",
+      "points": 213.0
+    },
+    {
+      "edition": 39,
+      "nation": "Canedonia",
+      "artist": "Jennifer Lopez",
+      "song": "Ain't It Funny",
+      "points": 168.0
+    },
+    {
+      "edition": 40,
+      "nation": "Zaprya",
+      "artist": "Armin van Buuren feat. Sharon den Adel",
+      "song": "In and Out of Love",
+      "points": 166.0
+    },
+    {
+      "edition": 41,
+      "nation": "Vorhota",
+      "artist": "Lily Allen",
+      "song": "Fuck You",
+      "points": 161.0
+    },
+    {
+      "edition": 42,
+      "nation": "Vegetaria",
+      "artist": "Space Cowboy",
+      "song": "Falling Down",
+      "points": 206.0
+    },
+    {
+      "edition": 43,
+      "nation": "Scorpionia",
+      "artist": "Vanilla Ninja",
+      "song": "Blue Tattoo",
+      "points": 177.0
+    },
+    {
+      "edition": 44,
+      "nation": "Scorpionia",
+      "artist": "Ani Lorak",
+      "song": "I'm Alive",
+      "points": 165.0
+    },
+    {
+      "edition": 45,
+      "nation": "Spila",
+      "artist": "Lady Gaga",
+      "song": "Bad Romance",
+      "points": 190.0
+    },
+    {
+      "edition": 46,
+      "nation": "Reignland",
+      "artist": "Brown Eyed Girls",
+      "song": "Abracadabra",
+      "points": 153.0
+    },
+    {
+      "edition": 47,
+      "nation": "Aleksandrija",
+      "artist": "Within Temptation",
+      "song": "Stand My Ground",
+      "points": 189.0
+    },
+    {
+      "edition": 48,
+      "nation": "Ecclestonia",
+      "artist": "Muse",
+      "song": "Uprising",
+      "points": 154.0
+    },
+    {
+      "edition": 49,
+      "nation": "Bokia",
+      "artist": "Cheryl Cole",
+      "song": "Parachute",
+      "points": 188.0
+    },
+    {
+      "edition": 50,
+      "nation": "Halito",
+      "artist": "Hot Chelle Rae",
+      "song": "I Like to Dance",
+      "points": 157.0
+    },
+    {
+      "edition": 51,
+      "nation": "Scorpionia",
+      "artist": "Eric Saade",
+      "song": "Sleepless",
+      "points": 193.0
+    },
+    {
+      "edition": 52,
+      "nation": "Zechonia",
+      "artist": "Katie Melua",
+      "song": "The Flood",
+      "points": 217.0
+    },
+    {
+      "edition": 53,
+      "nation": "Greenfroze",
+      "artist": "K'naan feat. David Bisbal",
+      "song": "Wavin' Flag",
+      "points": 139.0
+    },
+    {
+      "edition": 54,
+      "nation": "Calypso",
+      "artist": "Peter Luts",
+      "song": "The Rain",
+      "points": 155.0
+    },
+    {
+      "edition": 55,
+      "nation": "Zaprya",
+      "artist": "Monrose",
+      "song": "Like a Lady",
+      "points": 173.0
+    },
+    {
+      "edition": 56,
+      "nation": "Pigeon Island",
+      "artist": "Cristina Rus",
+      "song": "I Don't See Ya",
+      "points": 136.0
+    },
+    {
+      "edition": 57,
+      "nation": "Serenate & Clair",
+      "artist": "BoA",
+      "song": "Hurricane Venus",
+      "points": 190.0
+    },
+    {
+      "edition": 58,
+      "nation": "Viola Per Sempre",
+      "artist": "Christina Perri",
+      "song": "Jar of Hearts",
+      "points": 248.0
+    },
+    {
+      "edition": 59,
+      "nation": "Pigeon Island",
+      "artist": "Lenka",
+      "song": "Trouble Is a Friend",
+      "points": 167.0
+    },
+    {
+      "edition": 60,
+      "nation": "Berceniland",
+      "artist": "Magazin",
+      "song": "Sijamski blizanci",
+      "points": 162.0
+    },
+    {
+      "edition": 61,
+      "nation": "Zaprya",
+      "artist": "Nicole Scherzinger",
+      "song": "Poison",
+      "points": 199.0
+    },
+    {
+      "edition": 62,
+      "nation": "Akkåville",
+      "artist": "Caro Emerald",
+      "song": "That Man",
+      "points": 183.0
+    },
+    {
+      "edition": 63,
+      "nation": "Pigeon Island",
+      "artist": "Ingrid Michaelson",
+      "song": "Maybe",
+      "points": 157.0
+    },
+    {
+      "edition": 64,
+      "nation": "Ugaly",
+      "artist": "Brandi Carlile",
+      "song": "Dreams",
+      "points": 183.0
+    },
+    {
+      "edition": 65,
+      "nation": "Tohru",
+      "artist": "Nolwenn Leroy",
+      "song": "Tri Martolod",
+      "points": 201.0
+    },
+    {
+      "edition": 66,
+      "nation": "Cydoni-Gibberia",
+      "artist": "The Naked and Famous",
+      "song": "Punching in a Dream",
+      "points": 207.0
+    },
+    {
+      "edition": 67,
+      "nation": "Calypso",
+      "artist": "Nathalie Giannitrapani",
+      "song": "Vivo Sospesa",
+      "points": 225.0
+    },
+    {
+      "edition": 68,
+      "nation": "Noizeland",
+      "artist": "Super Czerny",
+      "song": "Queen of Queer",
+      "points": 180.0
+    },
+    {
+      "edition": 69,
+      "nation": "Mooseland",
+      "artist": "Adele",
+      "song": "Someone Like You",
+      "points": 236.0
+    },
+    {
+      "edition": 70,
+      "nation": "Greenfroze",
+      "artist": "Philter",
+      "song": "Revolver",
+      "points": 195.0
+    },
+    {
+      "edition": 71,
+      "nation": "Tír an Abhainn",
+      "artist": "Edward Sharpe and the Magnetic Zeros",
+      "song": "Home",
+      "points": 165.0
+    },
+    {
+      "edition": 72,
+      "nation": "Ugaly",
+      "artist": "Evelyn Evelyn",
+      "song": "Evelyn Evelyn",
+      "points": 185.0
+    },
+    {
+      "edition": 73,
+      "nation": "Bacchus",
+      "artist": "The Saturdays",
+      "song": "All Fired Up",
+      "points": 191.0
+    },
+    {
+      "edition": 74,
+      "nation": "Roseland",
+      "artist": "Jakalope",
+      "song": "Witness",
+      "points": 196.0
+    },
+    {
+      "edition": 75,
+      "nation": "Xhanostania",
+      "artist": "Greip",
+      "song": "Vihma Loits",
+      "points": 212.0
+    },
+    {
+      "edition": 76,
+      "nation": "Doire",
+      "artist": "King Charles",
+      "song": "Mississippi Isabel",
+      "points": 213.0
+    },
+    {
+      "edition": 77,
+      "nation": "Kostanovia",
+      "artist": "Lana Del Rey",
+      "song": "Born to Die",
+      "points": 217.0
+    },
+    {
+      "edition": 78,
+      "nation": "Pigeon Island",
+      "artist": "Gemma Copas",
+      "song": "Invisible",
+      "points": 200.0
+    },
+    {
+      "edition": 79,
+      "nation": "10 Regions of Mobius",
+      "artist": "Of Monsters and Men",
+      "song": "Little Talks",
+      "points": 252.0
+    },
+    {
+      "edition": 80,
+      "nation": "Waloria",
+      "artist": "Laleh",
+      "song": "Some Die Young",
+      "points": 201.0
+    },
+    {
+      "edition": 81,
+      "nation": "Cydoni-Gibberia",
+      "artist": "Capital Cities",
+      "song": "Safe and Sound",
+      "points": 214.0
+    },
+    {
+      "edition": 82,
+      "nation": "Zechonia",
+      "artist": "Ronya",
+      "song": "Hyperventilating",
+      "points": 223.0
+    },
+    {
+      "edition": 83,
+      "nation": "Paperland",
+      "artist": "SomethingALaMode feat. Karl Lagerfeld",
+      "song": "Rondo Parisiano",
+      "points": 193.0
+    },
+    {
+      "edition": 84,
+      "nation": "Bacchus",
+      "artist": "Woodkid",
+      "song": "Run Boy Run",
+      "points": 212.0
+    },
+    {
+      "edition": 85,
+      "nation": "Doire",
+      "artist": "San Cisco",
+      "song": "Awkward",
+      "points": 180.0
+    },
+    {
+      "edition": 86,
+      "nation": "Llama Republic",
+      "artist": "The Storm",
+      "song": "Raver",
+      "points": 176.0
+    },
+    {
+      "edition": 87,
+      "nation": "Pigeon Island",
+      "artist": "Hampenberg feat. Jesper Nohrstedt",
+      "song": "Glorious",
+      "points": 219.0
+    },
+    {
+      "edition": 88,
+      "nation": "Rumia",
+      "artist": "Fiddler's Green",
+      "song": "Yindy",
+      "points": 260.0
+    },
+    {
+      "edition": 89,
+      "nation": "U.E.H. Prasia & Xanadu",
+      "artist": "Khaled",
+      "song": "C'est La Vie",
+      "points": 225.0
+    },
+    {
+      "edition": 90,
+      "nation": "Waloria",
+      "artist": "Tangerine Kitty",
+      "song": "Dumb Ways to Die",
+      "points": 200.0
+    },
+    {
+      "edition": 91,
+      "nation": "Sunland",
+      "artist": "Krewella",
+      "song": "Alive",
+      "points": 184.0
+    },
+    {
+      "edition": 92,
+      "nation": "Zechonia",
+      "artist": "Phildel",
+      "song": "Storm Song",
+      "points": 179.0
+    },
+    {
+      "edition": 93,
+      "nation": "Waloria",
+      "artist": "Zedd feat. Foxes",
+      "song": "Clarity",
+      "points": 205.0
+    },
+    {
+      "edition": 94,
+      "nation": "Paperland",
+      "artist": "Potap i Nastya",
+      "song": "Chumachechaya Vesna",
+      "points": 214.0
+    },
+    {
+      "edition": 95,
+      "nation": "Prasia",
+      "artist": "Various Artists",
+      "song": "Welcome to Racha",
+      "points": 210.0
+    },
+    {
+      "edition": 96,
+      "nation": "Serenate & Clair",
+      "artist": "Florrie",
+      "song": "Shot You Down",
+      "points": 162.0
+    },
+    {
+      "edition": 97,
+      "nation": "Zombira",
+      "artist": "Laleh",
+      "song": "Vårens första dag",
+      "points": 157.0
+    },
+    {
+      "edition": 98,
+      "nation": "Horehronieland",
+      "artist": "Les Ramoneurs de Menhirs",
+      "song": "Menez Daou",
+      "points": 202.0
+    },
+    {
+      "edition": 99,
+      "nation": "Illumia",
+      "artist": "Alida",
+      "song": "Feathers",
+      "points": 199.0
+    },
+    {
+      "edition": 100,
+      "nation": "Anselmsmumonia",
+      "artist": "Pixie Paris",
+      "song": "Ich lieb dich nicht immer",
+      "points": 189.0
+    },
+    {
+      "edition": 101,
+      "nation": "Zumkotzen",
+      "artist": "London Grammar",
+      "song": "Strong",
+      "points": 206.0
+    },
+    {
+      "edition": 102,
+      "nation": "Pigeon Island",
+      "artist": "Laleh",
+      "song": "Colors",
+      "points": 215.0
+    },
+    {
+      "edition": 103,
+      "nation": "Ugaly",
+      "artist": "Ugaly",
+      "song": "Ugaly",
+      "points": 223.0
+    },
+    {
+      "edition": 104,
+      "nation": "Rumia",
+      "artist": "The Hillbilly Moon Explosion",
+      "song": "My Love for Evermore",
+      "points": 190.0
+    },
+    {
+      "edition": 105,
+      "nation": "Waloria",
+      "artist": "Clean Bandit feat. Jess Glynne",
+      "song": "Rather Be",
+      "points": 185.0
+    },
+    {
+      "edition": 106,
+      "nation": "Carpatina",
+      "artist": "Indila",
+      "song": "Dernière danse",
+      "points": 229.0
+    },
+    {
+      "edition": 107,
+      "nation": "Pigeon Island",
+      "artist": "Oonagh",
+      "song": "Gäa",
+      "points": 210.0
+    },
+    {
+      "edition": 108,
+      "nation": "Noizeland",
+      "artist": "Daan",
+      "song": "La Crise",
+      "points": 188.0
+    },
+    {
+      "edition": 109,
+      "nation": "Cherniya",
+      "artist": "Anna Rossinelli",
+      "song": "Shine in the Light",
+      "points": 203.0
+    },
+    {
+      "edition": 110,
+      "nation": "Zechonia",
+      "artist": "Tuomas Holopainen",
+      "song": "The Last Sled",
+      "points": 168.0
+    },
+    {
+      "edition": 111,
+      "nation": "Paperland",
+      "artist": "Ibeyi",
+      "song": "Oya",
+      "points": 198.0
+    },
+    {
+      "edition": 112,
+      "nation": "Horehronieland",
+      "artist": "KeshYou",
+      "song": "Rizamyn",
+      "points": 186.0
+    },
+    {
+      "edition": 113,
+      "nation": "Eterland",
+      "artist": "Years & Years",
+      "song": "Take Shelter",
+      "points": 192.0
+    },
+    {
+      "edition": 114,
+      "nation": "Anselmsmumonia",
+      "artist": "Mirel Wagner",
+      "song": "No Death",
+      "points": 196.0
+    },
+    {
+      "edition": 115,
+      "nation": "New Acadia",
+      "artist": "The Family Crest",
+      "song": "North",
+      "points": 230.0
+    },
+    {
+      "edition": 116,
+      "nation": "Noizeland",
+      "artist": "Folkstone",
+      "song": "In Caduta Libera",
+      "points": 181.0
+    },
+    {
+      "edition": 117,
+      "nation": "Luxona",
+      "artist": "AronChupa",
+      "song": "I'm an Albatraoz",
+      "points": 181.0
+    },
+    {
+      "edition": 118,
+      "nation": "SR Indiria",
+      "artist": "Stockholm Syndrome",
+      "song": "Kalabalik",
+      "points": 199.0
+    },
+    {
+      "edition": 119,
+      "nation": "Illumia",
+      "artist": "Fjokra",
+      "song": "Get Amongst It",
+      "points": 171.0
+    },
+    {
+      "edition": 120,
+      "nation": "Srivijaya & Sasentia",
+      "artist": "ONE OK ROCK",
+      "song": "Mighty Long Fall",
+      "points": 164.0
+    },
+    {
+      "edition": 121,
+      "nation": "Dalisska",
+      "artist": "San Fermin",
+      "song": "Jackrabbit",
+      "points": 216.0
+    },
+    {
+      "edition": 122,
+      "nation": "Rumia",
+      "artist": "Eluveitie",
+      "song": "The Call of the Mountains",
+      "points": 177.0
+    },
+    {
+      "edition": 123,
+      "nation": "Waloria",
+      "artist": "Hurricane Love",
+      "song": "Nowhere to Go",
+      "points": 192.0
+    },
+    {
+      "edition": 124,
+      "nation": "Doire",
+      "artist": "Wohnout",
+      "song": "Gastrosexuál",
+      "points": 175.0
+    },
+    {
+      "edition": 125,
+      "nation": "Paper & INK",
+      "artist": "Bear's Den",
+      "song": "Above the Clouds of Pompeii",
+      "points": 153.0
+    },
+    {
+      "edition": 126,
+      "nation": "Ujedinjeni Gvozd",
+      "artist": "Nina Kraljić",
+      "song": "Zaljuljali Smo Svijet",
+      "points": 213.0
+    },
+    {
+      "edition": 127,
+      "nation": "Balearica Island",
+      "artist": "S3RL feat. Lexi",
+      "song": "Genre Police",
+      "points": 166.0
+    },
+    {
+      "edition": 128,
+      "nation": "Pebbleland",
+      "artist": "Disclosure feat. Lorde",
+      "song": "Magnets",
+      "points": 175.0
+    },
+    {
+      "edition": 129,
+      "nation": "Hypjø",
+      "artist": "Susanne Sundfør",
+      "song": "Accelerate",
+      "points": 226.0
+    },
+    {
+      "edition": 130,
+      "nation": "Balearica Island",
+      "artist": "Giorgio Moroder feat. Britney Spears",
+      "song": "Tom's Diner",
+      "points": 206.0
+    },
+    {
+      "edition": 131,
+      "nation": "Viola Per Sempre",
+      "artist": "filous feat. Jordan Léser",
+      "song": "Shaded In",
+      "points": 180.0
+    },
+    {
+      "edition": 132,
+      "nation": "Hypjø",
+      "artist": "Purity Ring",
+      "song": "begin again",
+      "points": 237.0
+    },
+    {
+      "edition": 133,
+      "nation": "Calypso",
+      "artist": "Dua Lipa",
+      "song": "Last Dance",
+      "points": 197.0
+    },
+    {
+      "edition": 134,
+      "nation": "Emsfrõnt",
+      "artist": "BROODS",
+      "song": "Free",
+      "points": 180.0
+    },
+    {
+      "edition": 135,
+      "nation": "Halito",
+      "artist": "Lillix",
+      "song": "Sweet Temptation",
+      "points": 185.0
+    },
+    {
+      "edition": 136,
+      "nation": "Waiting Iist of Shelley & Nici, Tanner & Josh, Tiffany & Krista and Denise & James Earl",
+      "artist": "Onuka",
+      "song": "1986",
+      "points": 229.0
+    },
+    {
+      "edition": 137,
+      "nation": "Rumia",
+      "artist": "Paddy and the Rats",
+      "song": "My Sharona",
+      "points": 183.0
+    },
+    {
+      "edition": 138,
+      "nation": "Perryfornia",
+      "artist": "Eivør",
+      "song": "Í Tokuni",
+      "points": 224.0
+    },
+    {
+      "edition": 139,
+      "nation": "Aimūlli",
+      "artist": "Susanne Sundfør",
+      "song": "Kamikaze",
+      "points": 197.0
+    },
+    {
+      "edition": 140,
+      "nation": "Ujedinjeni Gvozd",
+      "artist": "Sallan ja Miron matka maailman ympäri",
+      "song": "Rakastat mua paremmin",
+      "points": 185.0
+    },
+    {
+      "edition": 141,
+      "nation": "Fervorosia",
+      "artist": "Feder feat. Alex Aiono",
+      "song": "Lordly",
+      "points": 182.0
+    },
+    {
+      "edition": 142,
+      "nation": "Perryfornia",
+      "artist": "CHVRCHES",
+      "song": "Bury It",
+      "points": 192.0
+    },
+    {
+      "edition": 143,
+      "nation": "Begonia",
+      "artist": "Huntza",
+      "song": "Aldapan gora",
+      "points": 235.0
+    },
+    {
+      "edition": 144,
+      "nation": "Waloria",
+      "artist": "Smith & Thell",
+      "song": "Row",
+      "points": 180.0
+    },
+    {
+      "edition": 145,
+      "nation": "Pigeon Island",
+      "artist": "Lorde",
+      "song": "Green Light",
+      "points": 218.0
+    },
+    {
+      "edition": 146,
+      "nation": "Lacrea",
+      "artist": "Sin Fang, Sóley & Örvar Smárason",
+      "song": "Random Haiku Generator",
+      "points": 182.0
+    },
+    {
+      "edition": 147,
+      "nation": "Noizeland",
+      "artist": "Susumu Hirasawa",
+      "song": "Parade",
+      "points": 195.0
+    },
+    {
+      "edition": 148,
+      "nation": "Hypjø",
+      "artist": "ionnalee",
+      "song": "NOT HUMAN",
+      "points": 172.0
+    },
+    {
+      "edition": 149,
+      "nation": "Reym-L-Dneurb",
+      "artist": "The Pirouettes",
+      "song": "L'escalier",
+      "points": 212.0
+    },
+    {
+      "edition": 150,
+      "nation": "Luzinia",
+      "artist": "ANDRRA",
+      "song": "Palinë",
+      "points": 203.0
+    },
+    {
+      "edition": 151,
+      "nation": "Emsfrynt",
+      "artist": "Kanykei",
+      "song": "Kuurchak",
+      "points": 199.0
+    },
+    {
+      "edition": 152,
+      "nation": "Calypso",
+      "artist": "Cosmo Sheldrake",
+      "song": "Come Along",
+      "points": 243.0
+    },
+    {
+      "edition": 153,
+      "nation": "Lukeland",
+      "artist": "Sigrid",
+      "song": "Strangers",
+      "points": 180.0
+    },
+    {
+      "edition": 154,
+      "nation": "Papendink",
+      "artist": "Ye Banished Privateers",
+      "song": "Annabel",
+      "points": 189.0
+    },
+    {
+      "edition": 155,
+      "nation": "Moisantia",
+      "artist": "Namewee feat. Meu Ninomiya",
+      "song": "Makudonarudo",
+      "points": 190.0
+    },
+    {
+      "edition": 156,
+      "nation": "Uferbruht",
+      "artist": "Beach House",
+      "song": "Space Song",
+      "points": 187.0
+    },
+    {
+      "edition": 157,
+      "nation": "Blackmere",
+      "artist": "Talos",
+      "song": "Odyssey",
+      "points": 192.0
+    },
+    {
+      "edition": 158,
+      "nation": "Aimūlli",
+      "artist": "Evgeniya Sotnikova",
+      "song": "Uletay na krilyah vetra",
+      "points": 171.0
+    },
+    {
+      "edition": 159,
+      "nation": "Luzinia",
+      "artist": "Meg Myers",
+      "song": "Numb",
+      "points": 187.0
+    },
+    {
+      "edition": 160,
+      "nation": "Kadis",
+      "artist": "Gaby Moreno",
+      "song": "El sombreron",
+      "points": 184.0
+    },
+    {
+      "edition": 161,
+      "nation": "Noizeland",
+      "artist": "Paloma Del Cerro feat. Miss Bolivia",
+      "song": "Para todas las mamitas del mundo",
+      "points": 185.0
+    },
+    {
+      "edition": 162,
+      "nation": "New Bander State",
+      "artist": "Arnór Dan",
+      "song": "Stone by Stone",
+      "points": 186.0
+    },
+    {
+      "edition": 163,
+      "nation": "Uferbruht",
+      "artist": "Bears of Legend",
+      "song": "When I Saved You from the Sea",
+      "points": 150.0
+    },
+    {
+      "edition": 164,
+      "nation": "Emsfrynt",
+      "artist": "Charli XCX & Troye Sivan",
+      "song": "1999",
+      "points": 186.0
+    },
+    {
+      "edition": 165,
+      "nation": "Hypjø",
+      "artist": "Grimes feat. HANA",
+      "song": "We Appreciate Power",
+      "points": 189.0
+    },
+    {
+      "edition": 166,
+      "nation": "Insomnéa",
+      "artist": "Blanco White",
+      "song": "Colder Heavens",
+      "points": 199.0
+    },
+    {
+      "edition": 167,
+      "nation": "Hypjø",
+      "artist": "Rein",
+      "song": "Electric",
+      "points": 191.0
+    },
+    {
+      "edition": 168,
+      "nation": "Solentoya",
+      "artist": "Faruk Sabanci & MARUV",
+      "song": "For You",
+      "points": 175.0
+    },
+    {
+      "edition": 169,
+      "nation": "Aimūlli",
+      "artist": "Marie Laforêt",
+      "song": "Ivan, Boris et moi",
+      "points": 164.0
+    },
+    {
+      "edition": 170,
+      "nation": "Emsfrynt",
+      "artist": "Junior Brielle",
+      "song": "Love",
+      "points": 195.0
+    },
+    {
+      "edition": 171,
+      "nation": "Rahasia-Diati",
+      "artist": "Canine",
+      "song": "Bienveillance",
+      "points": 174.0
+    },
+    {
+      "edition": 172,
+      "nation": "Kimmystan",
+      "artist": "Lola Marsh",
+      "song": "Echoes",
+      "points": 200.0
+    },
+    {
+      "edition": 173,
+      "nation": "Serenes",
+      "artist": "PUPU",
+      "song": "Wandering Wonderer",
+      "points": 173.0
+    },
+    {
+      "edition": 174,
+      "nation": "Jemmuise",
+      "artist": "Kayah & Atanas Valkov",
+      "song": "Czarna Polana",
+      "points": 203.0
+    },
+    {
+      "edition": 175,
+      "nation": "Jemmuise",
+      "artist": "Winona Oak",
+      "song": "Let Me Know",
+      "points": 167.0
+    },
+    {
+      "edition": 176,
+      "nation": "Kordavian Islands",
+      "artist": "Kwiat Jabłoni feat. Bum Bum Orkestar",
+      "song": "Idzie zima",
+      "points": 165.0
+    },
+    {
+      "edition": 177,
+      "nation": "Doire",
+      "artist": "Oscar Scheller feat. PAWWS",
+      "song": "Interstellar Disco",
+      "points": 209.0
+    },
+    {
+      "edition": 178,
+      "nation": "Emsfrynt",
+      "artist": "Gåte",
+      "song": "Kom no disjka",
+      "points": 188.0
+    },
+    {
+      "edition": 179,
+      "nation": "Tanoiro",
+      "artist": "Dreamcatcher",
+      "song": "Scream",
+      "points": 163.0
+    },
+    {
+      "edition": 180,
+      "nation": "Sundfør",
+      "artist": "KAZKA",
+      "song": "PALALA",
+      "points": 181.0
+    },
+    {
+      "edition": 181,
+      "nation": "Fervorosia",
+      "artist": "Cream Soda & Hleb",
+      "song": "Plachu Na Techno",
+      "points": 180.0
+    },
+    {
+      "edition": 182,
+      "nation": "Kordavian Islands",
+      "artist": "Klô Pelgag",
+      "song": "La maison jaune",
+      "points": 177.0
+    },
+    {
+      "edition": 183,
+      "nation": "Kadis",
+      "artist": "Aly & AJ",
+      "song": "Joan of Arc on the Dance Floor",
+      "points": 225.0
+    },
+    {
+      "edition": 184,
+      "nation": "Ujedinjeni Gvozd",
+      "artist": "Pomni Imya Svoe",
+      "song": "To, chto ya dolzhyen skazat'",
+      "points": 194.0
+    },
+    {
+      "edition": 185,
+      "nation": "Doire",
+      "artist": "M. Bulteau",
+      "song": "Boneklezmer",
+      "points": 174.0
+    },
+    {
+      "edition": 186,
+      "nation": "Tuzi",
+      "artist": "Danica Crnogorčević",
+      "song": "Veseli se srpski rode",
+      "points": 180.0
+    },
+    {
+      "edition": 187,
+      "nation": "Biflovatia",
+      "artist": "Elderbrook",
+      "song": "Numb",
+      "points": 186.0
+    },
+    {
+      "edition": 188,
+      "nation": "Lacrea",
+      "artist": "Chica Sobresalto",
+      "song": "Fusión del Núcleo",
+      "points": 184.0
+    },
+    {
+      "edition": 189,
+      "nation": "New Bander State",
+      "artist": "The Lathums",
+      "song": "Foolish Parley",
+      "points": 180.0
+    },
+    {
+      "edition": 190,
+      "nation": "Doire",
+      "artist": "Seo Linn",
+      "song": "Ar Scáth a Chéile",
+      "points": 196.0
+    },
+    {
+      "edition": 191,
+      "nation": "Begonia",
+      "artist": "The Half feat. Bahar",
+      "song": "Shablon Sevgi",
+      "points": 205.0
+    },
+    {
+      "edition": 192,
+      "nation": "Belvist",
+      "artist": "Blackbriar",
+      "song": "Arms of the Ocean",
+      "points": 214.0
+    },
+    {
+      "edition": 193,
+      "nation": "Cydoni-Gibberia",
+      "artist": "Carson Coma",
+      "song": "Pók",
+      "points": 239.0
+    },
+    {
+      "edition": 194,
+      "nation": "Serenes",
+      "artist": "Polo & Pan",
+      "song": "Ani Kuni",
+      "points": 197.0
+    },
+    {
+      "edition": 195,
+      "nation": "Rahasia-Diati",
+      "artist": "Jadudah",
+      "song": "Love You (When You're a Mess)",
+      "points": 257.0
+    },
+    {
+      "edition": 196,
+      "nation": "Vylkuzeme",
+      "artist": "Dzivia",
+      "song": "Flower Maiden",
+      "points": 194.0
+    },
+    {
+      "edition": 197,
+      "nation": "Emsfrynt",
+      "artist": "Alba August",
+      "song": "Killing Time",
+      "points": 171.0
+    },
+    {
+      "edition": 198,
+      "nation": "New Bander State",
+      "artist": "BLACKBOOK",
+      "song": "Slowlove",
+      "points": 189.0
+    },
+    {
+      "edition": 199,
+      "nation": "Ic-Sa-Calli",
+      "artist": "Elin Bell",
+      "song": "Over and Out",
+      "points": 206.0
+    },
+    {
+      "edition": 200,
+      "nation": "Comino",
+      "artist": "White Lies",
+      "song": "As I Try Not to Fall Apart",
+      "points": 176.0
+    },
+    {
+      "edition": 201,
+      "nation": "Aimūlli",
+      "artist": "Mike Oldfield",
+      "song": "To France",
+      "points": 240.0
+    },
+    {
+      "edition": 202,
+      "nation": "Tír an Abhainn",
+      "artist": "Froukje",
+      "song": "Groter dan ik",
+      "points": 193.0
+    },
+    {
+      "edition": 203,
+      "nation": "Ugaly",
+      "artist": "Ragnar Roffbeard",
+      "song": "Anthem of Roffbeard the Mighty",
+      "points": 234.0
+    },
+    {
+      "edition": 204,
+      "nation": "Sundfør",
+      "artist": "KAZKA",
+      "song": "I Am Not OK",
+      "points": 181.0
+    },
+    {
+      "edition": 205,
+      "nation": "Svobodnia",
+      "artist": "Purple Disco Machine & Sophie and the Giants",
+      "song": "In the Dark",
+      "points": 170.0
+    },
+    {
+      "edition": 206,
+      "nation": "Ugaly",
+      "artist": "Night Club",
+      "song": "Die in the Disco",
+      "points": 162.0
+    },
+    {
+      "edition": 207,
+      "nation": "Tamausia & Deltannor",
+      "artist": "Harmonija Disonance",
+      "song": "Zima",
+      "points": 212.0
+    },
+    {
+      "edition": 208,
+      "nation": "Tcher-Racoi",
+      "artist": "Stereopolina",
+      "song": "Posledneye svidaniye",
+      "points": 163.0
+    },
+    {
+      "edition": 209,
+      "nation": "Šilček",
+      "artist": "Confidence Man",
+      "song": "Holiday",
+      "points": 230.0
+    },
+    {
+      "edition": 210,
+      "nation": "Orangualia",
+      "artist": "Fish in a Birdcage",
+      "song": "Rule #4 - Fish in a Birdcage",
+      "points": 165.0
+    },
+    {
+      "edition": 211,
+      "nation": "Mormadorei",
+      "artist": "Yeah Yeah Yeahs",
+      "song": "Wolf",
+      "points": 179.0
+    },
+    {
+      "edition": 212,
+      "nation": "New Acadia",
+      "artist": "Daisy the Great & AJR",
+      "song": "Record Player",
+      "points": 208.0
+    },
+    {
+      "edition": 213,
+      "nation": "Kadis",
+      "artist": "Kali Mutsa",
+      "song": "HaYaKo HaYaKo",
+      "points": 185.0
+    },
+    {
+      "edition": 214,
+      "nation": "Balearica Island",
+      "artist": "Billx & Otyken",
+      "song": "My Wing (Rave Music Edit)",
+      "points": 196.0
+    },
+    {
+      "edition": 215,
+      "nation": "Kadis",
+      "artist": "Expresso Transatlântico feat. Conan Osíris",
+      "song": "Barquinha",
+      "points": 195.0
+    },
+    {
+      "edition": 216,
+      "nation": "New Acadia",
+      "artist": "Zaho de Sagazan",
+      "song": "Tristesse",
+      "points": 180.0
+    },
+    {
+      "edition": 217,
+      "nation": "Tír an Abhainn",
+      "artist": "Witchz",
+      "song": "The Magick",
+      "points": 194.0
+    },
+    {
+      "edition": 218,
+      "nation": "Šilček",
+      "artist": "Kylie Minogue",
+      "song": "Padam Padam",
+      "points": 206.0
+    },
+    {
+      "edition": 219,
+      "nation": "Halito",
+      "artist": "Emei",
+      "song": "That Girl",
+      "points": 230.0
+    },
+    {
+      "edition": 220,
+      "nation": "Griffin Empire",
+      "artist": "Troye Sivan",
+      "song": "Rush",
+      "points": 175.0
+    },
+    {
+      "edition": 221,
+      "nation": "EchseNam",
+      "artist": "Slowshift feat. Fay Wildhagen & Kristian Kristensen",
+      "song": "EndUp",
+      "points": 181.0
+    },
+    {
+      "edition": 222,
+      "nation": "Tcher-Racoi",
+      "artist": "The Kiffness x Lonely Cat",
+      "song": "Sometimes I'm Alone (Singing Cat)",
+      "points": 196.0
+    },
+    {
+      "edition": 223,
+      "nation": "New Bander State",
+      "artist": "Fat Dog",
+      "song": "King of the Slugs",
+      "points": 204.0
+    },
+    {
+      "edition": 224,
+      "nation": "Aimūlli",
+      "artist": "Hrdza",
+      "song": "Horela ľipka",
+      "points": 173.0
+    },
+    {
+      "edition": 225,
+      "nation": "Halito",
+      "artist": "mehro",
+      "song": "exploding",
+      "points": 213.0
+    },
+    {
+      "edition": 226,
+      "nation": "Kordavian Islands",
+      "artist": "Die Arkitekt feat. Lena Platonos",
+      "song": "Mirkhel",
+      "points": 200.0
+    },
+    {
+      "edition": 227,
+      "nation": "Xochimilia",
+      "artist": "ZETAK & Fillas de Cassandra",
+      "song": "ANGULEELE",
+      "points": 181.0
+    },
+    {
+      "edition": 228,
+      "nation": "Waiting Iist of Shelley & Nici",
+      "artist": "Artem Pivovarov & Klavdia Petrivna",
+      "song": "Baraban",
+      "points": 177.0
+    },
+    {
+      "edition": 229,
+      "nation": "Illumia",
+      "artist": "Kabin Crew & Lisdoonvarna Crew",
+      "song": "The Spark",
+      "points": 178.0
+    },
+    {
+      "edition": 230,
+      "nation": "Orangualia",
+      "artist": "Walter Astral",
+      "song": "Mirage",
+      "points": 214.0
+    },
+    {
+      "edition": 231,
+      "nation": "Waiting Iist of Shelley & Nici",
+      "artist": "Jude York",
+      "song": "Monaco",
+      "points": 225.0
+    },
+    {
+      "edition": 232,
+      "nation": "Endórë",
+      "artist": "Linkin Park",
+      "song": "The Emptiness Machine",
+      "points": 223.0
+    },
+    {
+      "edition": 233,
+      "nation": "Waiting Iist of Shelley & Nici",
+      "artist": "Sushin Shyam, Mary Ann Alexander & Vinayak Sasikumar",
+      "song": "Sthuthi",
+      "points": 177.0
+    },
+    {
+      "edition": 234,
+      "nation": "Xhuxhmaxhuxh",
+      "artist": "Damiano David",
+      "song": "Born with a Broken Heart",
+      "points": 196.0
+    },
+    {
+      "edition": 235,
+      "nation": "Illumia",
+      "artist": "Let's Eat Grandma",
+      "song": "Levitation",
+      "points": 162.0
+    },
+    {
+      "edition": 236,
+      "nation": "Tanoiro",
+      "artist": "She Past Away",
+      "song": "İnziva",
+      "points": 198.0
+    },
+    {
+      "edition": 237,
+      "nation": "Marcobia",
+      "artist": "NoGood Boyo",
+      "song": "Just a G.O.A.T",
+      "points": 197.0
+    },
+    {
+      "edition": 238,
+      "nation": "Belvist",
+      "artist": "Go_A",
+      "song": "Kalyna",
+      "points": 222.0
+    },
+    {
+      "edition": 239,
+      "nation": "Orangualia",
+      "artist": "junodream",
+      "song": "White Whale",
+      "points": 169.0
+    },
+    {
+      "edition": 240,
+      "nation": "Zombira",
+      "artist": "Lorien Testard & Alice Duport-Percier",
+      "song": "Alicia",
+      "points": 163.0
+    },
+    {
+      "edition": 241,
+      "nation": "Belvist",
+      "artist": "Zorja",
+      "song": "Tetno",
+      "points": 191.0
+    },
+    {
+      "edition": 242,
+      "nation": "Zombira",
+      "artist": "SADU",
+      "song": "Luukered",
+      "points": 197.0
+    },
+    {
+      "edition": 243,
+      "nation": "Meridia",
+      "artist": "Amy Manford",
+      "song": "Ghost of You",
+      "points": 187.0
+    },
+    {
+      "edition": 244,
+      "nation": "Waiting Iist of Shelley & Nici",
+      "artist": "Jerry Heil",
+      "song": "Doday̆ huchnosti (12 Points)",
+      "points": 205.0
+    },
+    {
+      "edition": 245,
+      "nation": "Ugaly",
+      "artist": "Madison Beer",
+      "song": "yes baby",
+      "points": 200.0
+    },
+    {
+      "edition": 246,
+      "nation": "Svobodnia",
+      "artist": "Pendulum & WARGASM",
+      "song": "Cannibal",
+      "points": 187.0
+    },
+    {
+      "edition": 247,
+      "nation": "New Acadia",
+      "artist": "Chasing Abbey",
+      "song": "Íorónta",
+      "points": 199.0
+    },
+    {
+      "edition": 248,
+      "nation": "New Bander State",
+      "artist": "The Family Crest",
+      "song": "Beneath the Brine",
+      "points": 169.0
+    }
+  ],
+  "topByWins": [
+    {
+      "nation": "Pigeon Island",
+      "wins": 8
+    },
+    {
+      "nation": "Ugaly",
+      "wins": 7
+    },
+    {
+      "nation": "Noizeland",
+      "wins": 6
+    },
+    {
+      "nation": "Doire",
+      "wins": 6
+    },
+    {
+      "nation": "Waloria",
+      "wins": 6
+    },
+    {
+      "nation": "Scorpionia",
+      "wins": 5
+    },
+    {
+      "nation": "Prasia",
+      "wins": 5
+    },
+    {
+      "nation": "Calypso",
+      "wins": 5
+    },
+    {
+      "nation": "Belvist",
+      "wins": 5
+    },
+    {
+      "nation": "Hypjø",
+      "wins": 5
+    },
+    {
+      "nation": "Aimūlli",
+      "wins": 5
+    },
+    {
+      "nation": "Emsfrynt",
+      "wins": 5
+    },
+    {
+      "nation": "New Bander State",
+      "wins": 5
+    },
+    {
+      "nation": "Vorhota",
+      "wins": 4
+    },
+    {
+      "nation": "Halito",
+      "wins": 4
+    },
+    {
+      "nation": "Zechonia",
+      "wins": 4
+    },
+    {
+      "nation": "Rumia",
+      "wins": 4
+    },
+    {
+      "nation": "Illumia",
+      "wins": 4
+    },
+    {
+      "nation": "New Acadia",
+      "wins": 4
+    },
+    {
+      "nation": "Kadis",
+      "wins": 4
+    },
+    {
+      "nation": "Waiting Iist of Shelley & Nici",
+      "wins": 4
+    },
+    {
+      "nation": "Bokia",
+      "wins": 3
+    },
+    {
+      "nation": "Spila",
+      "wins": 3
+    },
+    {
+      "nation": "Begonia",
+      "wins": 3
+    },
+    {
+      "nation": "Zaprya",
+      "wins": 3
+    },
+    {
+      "nation": "Cydoni-Gibberia",
+      "wins": 3
+    },
+    {
+      "nation": "Tír an Abhainn",
+      "wins": 3
+    },
+    {
+      "nation": "Paperland",
+      "wins": 3
+    },
+    {
+      "nation": "Zombira",
+      "wins": 3
+    },
+    {
+      "nation": "Ujedinjeni Gvozd",
+      "wins": 3
+    }
+  ]
+}

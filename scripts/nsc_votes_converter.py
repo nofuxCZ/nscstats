@@ -38,6 +38,7 @@ SHEET_PATTERNS = [
     (r"sf[- ]?1[- ]?(?:rej|reju|rj)", "R1"),
     (r"reju[- ]?1", "R1"),
     (r"s1\s*rej", "R1"),
+    (r"^1[- ]?reju$", "R1"),
     # SF2 Regular
     (r"s(?:emi[- ]?(?:final)?)?[- ]?2[- ]?(?:reg|regular|voting)?$", "S2"),
     (r"sf[- ]?2[- ]?(?:reg|regular|voting)?$", "S2"),
@@ -47,6 +48,7 @@ SHEET_PATTERNS = [
     (r"sf[- ]?2[- ]?(?:rej|reju|rj)", "R2"),
     (r"reju[- ]?2", "R2"),
     (r"s2\s*rej", "R2"),
+    (r"^2[- ]?reju$", "R2"),
     # Grand Final
     (r"^final$", "GF"),
     (r"^grand\s*final$", "GF"),
@@ -55,15 +57,21 @@ SHEET_PATTERNS = [
     (r"wl", "WL"),
     (r"waiting\s*list", "WL"),
     (r"waliju", "WL"),
+    # Bare "1" and "2" (must come after more specific patterns)
+    (r"^1$", "S1"),
+    (r"^2$", "S2"),
     # Semi results (combined) — skip
     (r"semi\s*results", "_SKIP"),
+    (r"semi\s*nq", "_SKIP"),
     (r"nq\s*results", "_SKIP"),
+    (r"final\s*reju", "_SKIP"),
     # Non-voting sheets
     (r"entries", "_SKIP"),
     (r"draw", "_SKIP"),
     (r"pots", "_SKIP"),
     (r"all\s*entries", "_SKIP"),
     (r"sf[12]\s*entries", "_SKIP"),
+    (r"^sheet\d*$", "_SKIP"),
 ]
 
 # Columns that are metadata, NOT voter names
@@ -397,10 +405,10 @@ def main():
     # Append to master file
     if args.append:
         existing = load_existing(args.append)
-        # Remove existing data for this edition (replace)
-        existing = [v for v in existing if v.get("Edition") != args.edition]
+        # Remove existing data for this edition (replace) and filter out empty rows
+        existing = [v for v in existing if v.get("Edition") is not None and v.get("Edition") != args.edition]
         combined = existing + votes
-        combined.sort(key=lambda v: (v["Edition"], v["Subevent"], v["Voter"], v["Nation"]))
+        combined.sort(key=lambda v: (v.get("Edition") or 0, v.get("Subevent") or "", v.get("Voter") or "", v.get("Nation") or ""))
         save_xlsx(combined, args.append)
     
     # Save output

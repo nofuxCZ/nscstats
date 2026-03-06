@@ -1,0 +1,406 @@
+{
+  "summary": {
+    "totalEditions": 248,
+    "totalNations": 308,
+    "totalGFEntries": 6906,
+    "totalSFEntries": 11901,
+    "uniqueArtists": 5313,
+    "uniqueSongs": 6517,
+    "highestScore": 260.0,
+    "highestScoreNation": "Rumia",
+    "highestScoreEdition": 88,
+    "latestWinner": "New Bander State",
+    "latestEdition": 248,
+    "latestArtist": "The Family Crest",
+    "latestSong": "Beneath the Brine",
+    "latestPoints": 169.0
+  },
+  "topNations": [
+    {
+      "nation": "Pigeon Island",
+      "wins": 8,
+      "entries": 72,
+      "top3": 12,
+      "top5": 19,
+      "avgPoints": 125.7,
+      "avgPlace": 11.8
+    },
+    {
+      "nation": "Ugaly",
+      "wins": 7,
+      "entries": 97,
+      "top3": 11,
+      "top5": 18,
+      "avgPoints": 109.4,
+      "avgPlace": 15.1
+    },
+    {
+      "nation": "Doire",
+      "wins": 6,
+      "entries": 102,
+      "top3": 16,
+      "top5": 19,
+      "avgPoints": 118.5,
+      "avgPlace": 14.4
+    },
+    {
+      "nation": "Noizeland",
+      "wins": 6,
+      "entries": 118,
+      "top3": 15,
+      "top5": 26,
+      "avgPoints": 114.0,
+      "avgPlace": 14.4
+    },
+    {
+      "nation": "Waloria",
+      "wins": 6,
+      "entries": 70,
+      "top3": 9,
+      "top5": 15,
+      "avgPoints": 122.4,
+      "avgPlace": 12.9
+    },
+    {
+      "nation": "New Bander State",
+      "wins": 5,
+      "entries": 83,
+      "top3": 17,
+      "top5": 25,
+      "avgPoints": 131.2,
+      "avgPlace": 11.1
+    },
+    {
+      "nation": "Calypso",
+      "wins": 5,
+      "entries": 175,
+      "top3": 16,
+      "top5": 25,
+      "avgPoints": 113.3,
+      "avgPlace": 14.2
+    },
+    {
+      "nation": "Belvist",
+      "wins": 5,
+      "entries": 85,
+      "top3": 15,
+      "top5": 25,
+      "avgPoints": 118.6,
+      "avgPlace": 12.5
+    },
+    {
+      "nation": "Scorpionia",
+      "wins": 5,
+      "entries": 54,
+      "top3": 13,
+      "top5": 18,
+      "avgPoints": 127.6,
+      "avgPlace": 10.1
+    },
+    {
+      "nation": "Prasia",
+      "wins": 5,
+      "entries": 56,
+      "top3": 11,
+      "top5": 15,
+      "avgPoints": 120.1,
+      "avgPlace": 12.7
+    },
+    {
+      "nation": "Emsfrynt",
+      "wins": 5,
+      "entries": 50,
+      "top3": 10,
+      "top5": 13,
+      "avgPoints": 122.9,
+      "avgPlace": 13.4
+    },
+    {
+      "nation": "Hypjø",
+      "wins": 5,
+      "entries": 46,
+      "top3": 8,
+      "top5": 13,
+      "avgPoints": 132.4,
+      "avgPlace": 11.3
+    },
+    {
+      "nation": "Aimūlli",
+      "wins": 5,
+      "entries": 55,
+      "top3": 6,
+      "top5": 8,
+      "avgPoints": 122.4,
+      "avgPlace": 14.0
+    },
+    {
+      "nation": "New Acadia",
+      "wins": 4,
+      "entries": 80,
+      "top3": 12,
+      "top5": 18,
+      "avgPoints": 122.7,
+      "avgPlace": 12.8
+    },
+    {
+      "nation": "Rumia",
+      "wins": 4,
+      "entries": 110,
+      "top3": 9,
+      "top5": 23,
+      "avgPoints": 117.5,
+      "avgPlace": 13.9
+    }
+  ],
+  "recentWinners": [
+    {
+      "edition": 248,
+      "nation": "New Bander State",
+      "artist": "The Family Crest",
+      "song": "Beneath the Brine",
+      "points": 169.0
+    },
+    {
+      "edition": 247,
+      "nation": "New Acadia",
+      "artist": "Chasing Abbey",
+      "song": "Íorónta",
+      "points": 199.0
+    },
+    {
+      "edition": 246,
+      "nation": "Svobodnia",
+      "artist": "Pendulum & WARGASM",
+      "song": "Cannibal",
+      "points": 187.0
+    },
+    {
+      "edition": 245,
+      "nation": "Ugaly",
+      "artist": "Madison Beer",
+      "song": "yes baby",
+      "points": 200.0
+    },
+    {
+      "edition": 244,
+      "nation": "Waiting Iist of Shelley & Nici",
+      "artist": "Jerry Heil",
+      "song": "Doday̆ huchnosti (12 Points)",
+      "points": 205.0
+    },
+    {
+      "edition": 243,
+      "nation": "Meridia",
+      "artist": "Amy Manford",
+      "song": "Ghost of You",
+      "points": 187.0
+    },
+    {
+      "edition": 242,
+      "nation": "Zombira",
+      "artist": "SADU",
+      "song": "Luukered",
+      "points": 197.0
+    },
+    {
+      "edition": 241,
+      "nation": "Belvist",
+      "artist": "Zorja",
+      "song": "Tetno",
+      "points": 191.0
+    },
+    {
+      "edition": 240,
+      "nation": "Zombira",
+      "artist": "Lorien Testard & Alice Duport-Percier",
+      "song": "Alicia",
+      "points": 163.0
+    },
+    {
+      "edition": 239,
+      "nation": "Orangualia",
+      "artist": "junodream",
+      "song": "White Whale",
+      "points": 169.0
+    },
+    {
+      "edition": 238,
+      "nation": "Belvist",
+      "artist": "Go_A",
+      "song": "Kalyna",
+      "points": 222.0
+    },
+    {
+      "edition": 237,
+      "nation": "Marcobia",
+      "artist": "NoGood Boyo",
+      "song": "Just a G.O.A.T",
+      "points": 197.0
+    },
+    {
+      "edition": 236,
+      "nation": "Tanoiro",
+      "artist": "She Past Away",
+      "song": "İnziva",
+      "points": 198.0
+    },
+    {
+      "edition": 235,
+      "nation": "Illumia",
+      "artist": "Let's Eat Grandma",
+      "song": "Levitation",
+      "points": 162.0
+    },
+    {
+      "edition": 234,
+      "nation": "Xhuxhmaxhuxh",
+      "artist": "Damiano David",
+      "song": "Born with a Broken Heart",
+      "points": 196.0
+    }
+  ],
+  "topArtists": [
+    {
+      "artist": "Lady Gaga",
+      "count": 18
+    },
+    {
+      "artist": "Florence + the Machine",
+      "count": 13
+    },
+    {
+      "artist": "Marina and the Diamonds",
+      "count": 12
+    },
+    {
+      "artist": "Within Temptation",
+      "count": 11
+    },
+    {
+      "artist": "AURORA",
+      "count": 10
+    },
+    {
+      "artist": "Britney Spears",
+      "count": 10
+    },
+    {
+      "artist": "Ellie Goulding",
+      "count": 10
+    },
+    {
+      "artist": "Nightwish",
+      "count": 9
+    },
+    {
+      "artist": "Kelly Clarkson",
+      "count": 9
+    },
+    {
+      "artist": "Kylie Minogue",
+      "count": 9
+    },
+    {
+      "artist": "Sia",
+      "count": 8
+    },
+    {
+      "artist": "Rihanna",
+      "count": 8
+    },
+    {
+      "artist": "Cascada",
+      "count": 8
+    },
+    {
+      "artist": "P!nk",
+      "count": 8
+    },
+    {
+      "artist": "Lana Del Rey",
+      "count": 8
+    }
+  ],
+  "recordScores": [
+    {
+      "edition": 88,
+      "nation": "Rumia",
+      "artist": "Fiddler's Green",
+      "song": "Yindy",
+      "place": 1,
+      "points": 260.0
+    },
+    {
+      "edition": 195,
+      "nation": "Rahasia-Diati",
+      "artist": "Jadudah",
+      "song": "Love You (When You're a Mess)",
+      "place": 1,
+      "points": 257.0
+    },
+    {
+      "edition": 79,
+      "nation": "10 Regions of Mobius",
+      "artist": "Of Monsters and Men",
+      "song": "Little Talks",
+      "place": 1,
+      "points": 252.0
+    },
+    {
+      "edition": 58,
+      "nation": "Viola Per Sempre",
+      "artist": "Christina Perri",
+      "song": "Jar of Hearts",
+      "place": 1,
+      "points": 248.0
+    },
+    {
+      "edition": 25,
+      "nation": "Belvist",
+      "artist": "Siddharta",
+      "song": "Insane",
+      "place": 1,
+      "points": 245.0
+    },
+    {
+      "edition": 152,
+      "nation": "Calypso",
+      "artist": "Cosmo Sheldrake",
+      "song": "Come Along",
+      "place": 1,
+      "points": 243.0
+    },
+    {
+      "edition": 201,
+      "nation": "Aimūlli",
+      "artist": "Mike Oldfield",
+      "song": "To France",
+      "place": 1,
+      "points": 240.0
+    },
+    {
+      "edition": 27,
+      "nation": "Spila",
+      "artist": "Amy Macdonald",
+      "song": "This Is the Life",
+      "place": 1,
+      "points": 239.0
+    },
+    {
+      "edition": 193,
+      "nation": "Cydoni-Gibberia",
+      "artist": "Carson Coma",
+      "song": "Pók",
+      "place": 1,
+      "points": 239.0
+    },
+    {
+      "edition": 132,
+      "nation": "Hypjø",
+      "artist": "Purity Ring",
+      "song": "begin again",
+      "place": 1,
+      "points": 237.0
+    }
+  ]
+}
