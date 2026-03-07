@@ -34,7 +34,7 @@ const VotingPage = lazy(() => import('./pages/VotingPage'));
 const VotingScoreboard = lazy(() => import('./pages/VotingScoreboard'));
 const RosterPage = lazy(() => import('./pages/RosterPage'));
 const ValidationPage = lazy(() => import('./pages/ValidationPage'));
-//const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
+const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
 
 export default function App() {
   return (
@@ -52,7 +52,7 @@ export default function App() {
             <Route path="/scoreboard" element={<VotingScoreboard />} />
             <Route path="/roster" element={<RosterPage />} />
             <Route path="/validation" element={<ValidationPage />} />
-            {/* <Route path="/api" element={<ApiDocsPage />} /> */}
+            <Route path="/api" element={<ApiDocsPage />} />
           </Routes>
           </Suspense>
         </ErrorBoundary>
