@@ -8,6 +8,8 @@ function MultiSelect({ items, selected, onToggle, label, color }) {
   var ref = useRef(null);
   var [open, setOpen] = useState(false);
   var [q, setQ] = useState("");
+  var [visibleCount, setVisibleCount] = useState(200);
+  var listRef = useRef(null);
 
   useEffect(function() {
     var h = function(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
@@ -15,7 +17,28 @@ function MultiSelect({ items, selected, onToggle, label, color }) {
     return function() { document.removeEventListener("mousedown", h); };
   }, []);
 
-  var fl = items.filter(function(n) { return n.toLowerCase().includes(q.toLowerCase()); });
+  // Reset visible count when search changes
+  useEffect(function() { setVisibleCount(200); }, [q]);
+
+  var fl = useMemo(function() {
+    if (!q) return items;
+    // "quoted" = exact match, unquoted = substring
+    var isExact = q.length >= 2 && q.charAt(0) === '"' && q.charAt(q.length - 1) === '"';
+    if (isExact) {
+      var term = q.slice(1, -1).toLowerCase();
+      return items.filter(function(n) { return n.toLowerCase() === term; });
+    }
+    var lq = q.toLowerCase();
+    return items.filter(function(n) { return n.toLowerCase().indexOf(lq) >= 0; });
+  }, [items, q]);
+
+  // Lazy load more on scroll
+  function handleScroll(e) {
+    var el = e.target;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+      setVisibleCount(function(c) { return Math.min(c + 200, fl.length); });
+    }
+  }
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
@@ -43,26 +66,29 @@ function MultiSelect({ items, selected, onToggle, label, color }) {
       {open && (
         <div style={{
           position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50, marginTop: 4,
-          maxHeight: 260, overflowY: "auto", borderRadius: 8,
+          maxHeight: 320, overflowY: "auto", borderRadius: 8,
           background: "var(--dropdown-bg)", border: "1px solid var(--border-10)",
-          boxShadow: "var(--dropdown-shadow)", minWidth: 200,
-        }}>
-          <input value={q} onChange={function(e) { setQ(e.target.value); }}
-            placeholder="Search..." autoFocus
-            style={{ width: "100%", padding: "8px 12px", border: "none", borderBottom: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontSize: 13, outline: "none" }}
-          />
-          {selected.length > 0 && (
-            <div onClick={function() { selected.forEach(function(s) { onToggle(s); }); }}
-              style={{ padding: "6px 12px", fontSize: 11, color: "var(--text-30)", cursor: "pointer", borderBottom: "1px solid var(--border)" }}
-              onMouseEnter={function(e) { e.target.style.background = "var(--hover-bg)"; }}
-              onMouseLeave={function(e) { e.target.style.background = "transparent"; }}
-            >Clear all</div>
-          )}
-          {fl.slice(0, 100).map(function(n) {
+          boxShadow: "var(--dropdown-shadow)", minWidth: 220,
+        }} ref={listRef} onScroll={handleScroll}>
+          <div style={{ position: "sticky", top: 0, zIndex: 1, background: "var(--dropdown-bg)" }}>
+            <input value={q} onChange={function(e) { setQ(e.target.value); }}
+              placeholder={'Search\u2026 "quotes" for exact'}
+              autoFocus onClick={function(e) { e.stopPropagation(); }}
+              style={{ width: "100%", padding: "8px 12px", border: "none", borderBottom: "1px solid var(--border)", background: "transparent", color: "var(--text)", fontSize: 13, outline: "none" }}
+            />
+            <div style={{ padding: "4px 12px", fontSize: 11, color: "var(--text-20)", borderBottom: "1px solid var(--text-04)", display: "flex", justifyContent: "space-between" }}>
+              <span>{fl.length + " match" + (fl.length !== 1 ? "es" : "")}</span>
+              {selected.length > 0 && (
+                <span onClick={function() { selected.forEach(function(s) { onToggle(s); }); }}
+                  style={{ cursor: "pointer", color: "var(--text-30)" }}>Clear all</span>
+              )}
+            </div>
+          </div>
+          {fl.slice(0, visibleCount).map(function(n) {
             var isSel = selected.indexOf(n) >= 0;
             return <div key={n} onClick={function() { onToggle(n); }}
               style={{
-                padding: "6px 12px", fontSize: 13, cursor: "pointer",
+                padding: "5px 12px", fontSize: 13, cursor: "pointer",
                 color: isSel ? _color : "var(--text-60)",
                 fontWeight: isSel ? 600 : 400,
                 borderBottom: "1px solid var(--text-04)",
@@ -71,6 +97,11 @@ function MultiSelect({ items, selected, onToggle, label, color }) {
               onMouseLeave={function(e) { e.target.style.background = "transparent"; }}
             >{(isSel ? "\u2713 " : "") + n}</div>;
           })}
+          {visibleCount < fl.length && (
+            <div style={{ padding: "8px 12px", fontSize: 11, color: "var(--text-20)", textAlign: "center" }}>
+              {"Scroll for more (" + (fl.length - visibleCount) + " remaining)"}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -89,6 +120,10 @@ export default function DatabasePage() {
   var [selSongs, setSelSongs] = useState([]);
   var [edFrom, setEdFrom] = useState("");
   var [edTo, setEdTo] = useState("");
+  var [placeFrom, setPlaceFrom] = useState("");
+  var [placeTo, setPlaceTo] = useState("");
+  var [ptsFrom, setPtsFrom] = useState("");
+  var [ptsTo, setPtsTo] = useState("");
 
   useEffect(function() {
     loadData("database").then(function(r) {
@@ -163,6 +198,10 @@ export default function DatabasePage() {
     if (selSongs.length > 0) rows = rows.filter(function(r) { return selSongs.indexOf(r.song) >= 0; });
     if (edFrom) rows = rows.filter(function(r) { return r.edition >= Number(edFrom); });
     if (edTo) rows = rows.filter(function(r) { return r.edition <= Number(edTo); });
+    if (placeFrom) rows = rows.filter(function(r) { return r.place != null && r.place >= Number(placeFrom); });
+    if (placeTo) rows = rows.filter(function(r) { return r.place != null && r.place <= Number(placeTo); });
+    if (ptsFrom) rows = rows.filter(function(r) { return r.points != null && r.points >= Number(ptsFrom); });
+    if (ptsTo) rows = rows.filter(function(r) { return r.points != null && r.points <= Number(ptsTo); });
     if (matchFn) rows = rows.filter(matchFn);
     // Multi-column sort
     return rows.slice().sort(function(a, b) {
@@ -178,7 +217,7 @@ export default function DatabasePage() {
       }
       return 0;
     });
-  }, [d, matchFn, sorts, subFilter, selNations, selArtists, selSongs, edFrom, edTo]);
+  }, [d, matchFn, sorts, subFilter, selNations, selArtists, selSongs, edFrom, edTo, placeFrom, placeTo, ptsFrom, ptsTo]);
 
   if (!d) return <Loader t="Loading 18,807 entries..." />;
 
@@ -245,7 +284,7 @@ export default function DatabasePage() {
     var a = document.createElement("a"); a.href = URL.createObjectURL(bl); a.download = "nsc_export.csv"; a.click();
   };
 
-  var hasFilters = subFilter !== "All" || selNations.length > 0 || selArtists.length > 0 || selSongs.length > 0 || edFrom || edTo;
+  var hasFilters = subFilter !== "All" || selNations.length > 0 || selArtists.length > 0 || selSongs.length > 0 || edFrom || edTo || placeFrom || placeTo || ptsFrom || ptsTo;
   var sortDesc = sorts.map(function(s) { return s.col + (s.dir === "asc" ? "\u2191" : "\u2193"); }).join(" \u2192 ");
 
   return (
@@ -304,8 +343,34 @@ export default function DatabasePage() {
           </div>
         </div>
 
+        <div>
+          <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Place Range"}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" placeholder="from" value={placeFrom}
+              onChange={function(e) { setPlaceFrom(e.target.value); setPg(0); }}
+              style={{ width: 52, padding: "6px 6px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+            <span style={{ color: "var(--text-15)" }}>{"to"}</span>
+            <input type="number" placeholder="to" value={placeTo}
+              onChange={function(e) { setPlaceTo(e.target.value); setPg(0); }}
+              style={{ width: 52, padding: "6px 6px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Points Range"}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <input type="number" placeholder="from" value={ptsFrom}
+              onChange={function(e) { setPtsFrom(e.target.value); setPg(0); }}
+              style={{ width: 52, padding: "6px 6px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+            <span style={{ color: "var(--text-15)" }}>{"to"}</span>
+            <input type="number" placeholder="to" value={ptsTo}
+              onChange={function(e) { setPtsTo(e.target.value); setPg(0); }}
+              style={{ width: 52, padding: "6px 6px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
+          </div>
+        </div>
+
         {hasFilters && (
-          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setSelArtists([]); setSelSongs([]); setEdFrom(""); setEdTo(""); setPg(0); }}>
+          <button className="xb" onClick={function() { setSubFilter("All"); setSelNations([]); setSelArtists([]); setSelSongs([]); setEdFrom(""); setEdTo(""); setPlaceFrom(""); setPlaceTo(""); setPtsFrom(""); setPtsTo(""); setPg(0); }}>
             {"Clear Filters"}
           </button>
         )}
