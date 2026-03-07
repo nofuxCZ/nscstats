@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
-import { Loader, SC, PL, YtLink } from '../components/Shared';
+import { Loader, SC, PL, YtLink, VideoEmbed } from '../components/Shared';
 
 export default function EditionPage() {
   const [D, setD] = useState(null);
@@ -97,10 +97,9 @@ export default function EditionPage() {
             const winner = (e.gf || []).find(r => r[4] === 1);
             const yt = winner && winner[6];
             if (!yt) return null;
-            const vid = yt.startsWith("http") ? (() => { try { return new URL(yt).searchParams.get("v") || yt.split("/").pop(); } catch(x) { return yt; } })() : yt;
             return (
               <div style={{ flex: "0 0 auto", width: "min(100%, 340px)", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
-                <iframe width="100%" height="100%" src={"https://www.youtube.com/embed/" + vid} title="Winning entry" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ border: 0 }} />
+                <VideoEmbed yt={yt} />
               </div>
             );
           })()}

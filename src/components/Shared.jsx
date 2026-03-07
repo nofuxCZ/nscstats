@@ -101,14 +101,46 @@ export function Pg({ p, t, set }) {
   );
 }
 
-// YouTube link
-export function YtLink({ yt }) {
+// Parse video URL: returns { type: "youtube"|"vimeo"|"unknown", id, url }
+export function parseVideoUrl(yt) {
   if (!yt) return null;
   const url = yt.startsWith("http") ? yt : `https://www.youtube.com/watch?v=${yt}`;
+  // Vimeo
+  const vm = url.match(/vimeo\.com\/(\d+)/);
+  if (vm) return { type: "vimeo", id: vm[1], url };
+  // YouTube
+  try {
+    const u = new URL(url);
+    const vid = u.searchParams.get("v") || u.pathname.split("/").pop();
+    if (vid) return { type: "youtube", id: vid, url };
+  } catch(e) {}
+  if (!yt.startsWith("http") && yt.length > 5) return { type: "youtube", id: yt, url };
+  return { type: "unknown", id: null, url };
+}
+
+// Video embed (YouTube or Vimeo)
+export function VideoEmbed({ yt, style }) {
+  const v = parseVideoUrl(yt);
+  if (!v) return null;
+  const src = v.type === "vimeo"
+    ? `https://player.vimeo.com/video/${v.id}?byline=0&portrait=0`
+    : `https://www.youtube.com/embed/${v.id}`;
   return (
-    <a href={url} target="_blank" rel="noreferrer"
+    <iframe width="100%" height="100%" src={src} title="Entry video" frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen
+      style={{ border: 0, ...style }} />
+  );
+}
+
+// Video link (▶ icon)
+export function YtLink({ yt }) {
+  if (!yt) return null;
+  const v = parseVideoUrl(yt);
+  if (!v) return null;
+  return (
+    <a href={v.url} target="_blank" rel="noreferrer"
       style={{ color: "var(--text-30)", fontSize: 15 }}
-      onMouseEnter={e => e.target.style.color = "#ff4444"}
+      onMouseEnter={e => e.target.style.color = v.type === "vimeo" ? "#1ab7ea" : "#ff4444"}
       onMouseLeave={e => e.target.style.color = "var(--text-30)"}
     >▶</a>
   );

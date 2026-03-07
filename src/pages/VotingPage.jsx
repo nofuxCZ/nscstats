@@ -228,7 +228,7 @@ export default function VotingPage() {
         </div>
       </div>
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 16 }}>
-        {[["explorer", "Nation Explorer"], ["leaderboard", "All Pairs"]].map(([k, l]) => (
+        {[["explorer", "Nation Explorer"], ["leaderboard", "All Pairs"], ["strongest", "Strongest Pairs"]].map(([k, l]) => (
           <button key={k} className={"tt " + (view === k ? "on" : "")} onClick={() => setView(k)}>{l}</button>
         ))}
       </div>
@@ -285,6 +285,63 @@ export default function VotingPage() {
               </tbody>
             </table>
           )}
+        </div>
+      )}
+
+      {view === "strongest" && (
+        <div className="fi">
+          <p style={{ fontSize: 12, color: "var(--text-30)", marginBottom: 16 }}>
+            Top mutual point exchanges — total points given from A→B + B→A across all shared editions.
+          </p>
+          {(() => {
+            // Build mutual pairs from loveLists
+            const pairMap = new Map();
+            for (const [from, to, total, count] of D.l) {
+              const key = Math.min(from, to) + "_" + Math.max(from, to);
+              if (!pairMap.has(key)) pairMap.set(key, { a: Math.min(from, to), b: Math.max(from, to), ab: 0, ba: 0, ca: 0, cb: 0 });
+              const p = pairMap.get(key);
+              if (from < to) { p.ab = total; p.ca = count; } else { p.ba = total; p.cb = count; }
+            }
+            const pairs = [...pairMap.values()].map(p => ({
+              ...p,
+              mutual: p.ab + p.ba,
+              avg: Math.round((p.ab + p.ba) / Math.max(p.ca, p.cb, 1)),
+            })).sort((a, b) => b.mutual - a.mutual);
+            const maxMutual = pairs[0]?.mutual || 1;
+
+            return (
+              <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 2px" }}>
+                <thead><tr>
+                  {["#", "Nation A", "→", "Nation B", "←", "Mutual Total", "Editions"].map((h, i) => (
+                    <th key={h} style={{
+                      padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--text-30)",
+                      textTransform: "uppercase", textAlign: i >= 5 ? "center" : i >= 2 && i <= 4 ? "right" : "left",
+                      borderBottom: "1px solid var(--border-08)",
+                      width: [36, null, 60, null, 60, 160, 50][i],
+                    }}>{h}</th>
+                  ))}
+                </tr></thead>
+                <tbody>
+                  {pairs.slice(0, 100).map((p, i) => (
+                    <tr key={p.a + "-" + p.b} style={{ cursor: "pointer" }} onClick={() => { setSel(p.a); setCmp(p.b); setView("explorer"); }}>
+                      <td style={{ padding: "8px 12px", fontSize: 13, fontWeight: 700, color: i < 3 ? ["var(--gold)", "var(--silver)", "var(--bronze)"][i] : "var(--text-25)", borderRadius: "8px 0 0 8px" }}>{i + 1}</td>
+                      <td style={{ padding: "8px 12px", fontSize: 13, fontWeight: 600, color: "var(--blue)" }}>{nn[p.a]}</td>
+                      <td style={{ padding: "8px 6px", fontSize: 12, fontWeight: 600, color: "var(--text-40)", textAlign: "right" }}>{p.ab}</td>
+                      <td style={{ padding: "8px 12px", fontSize: 13, fontWeight: 600, color: "var(--purple)" }}>{nn[p.b]}</td>
+                      <td style={{ padding: "8px 6px", fontSize: 12, fontWeight: 600, color: "var(--text-40)", textAlign: "right" }}>{p.ba}</td>
+                      <td style={{ padding: "8px 12px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <PtsBar v={p.mutual} mx={maxMutual} c={p.mutual >= maxMutual * 0.8 ? "var(--gold)" : "var(--blue)"} />
+                          <span style={{ fontWeight: 700, fontSize: 13, color: p.mutual >= maxMutual * 0.8 ? "var(--gold)" : "var(--blue)", minWidth: 50, textAlign: "right" }}>{p.mutual}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "8px 12px", textAlign: "center", fontSize: 13, color: "var(--text-40)", borderRadius: "0 8px 8px 0" }}>{Math.max(p.ca, p.cb)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
         </div>
       )}
     </div>
