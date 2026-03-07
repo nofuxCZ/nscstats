@@ -2,10 +2,9 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { loadData } from '../data/loader';
 import { Loader } from '../components/Shared';
 
-var SUB_NAMES = { 0: "Grand Final", 1: "Semifinal 1", 2: "Semifinal 2", 3: "WL Jury", 4: "REJU 1", 5: "REJU 2" };
 var SUB_SHORT = { 0: "GF", 1: "SF1", 2: "SF2", 3: "WL", 4: "R1", 5: "R2" };
 
-function Tooltip({ text, children }) {
+function Tooltip({ text, children, style }) {
   var ref = useRef(null);
   var [show, setShow] = useState(false);
   var [pos, setPos] = useState({ x: 0, y: 0 });
@@ -13,18 +12,81 @@ function Tooltip({ text, children }) {
   function onMove(e) { setPos({ x: e.clientX, y: e.clientY }); }
   function onLeave() { setShow(false); }
   return (
-    <span ref={ref} onMouseEnter={onEnter} onMouseMove={onMove} onMouseLeave={onLeave} style={{ cursor: text ? "help" : undefined }}>
+    <span ref={ref} onMouseEnter={onEnter} onMouseMove={onMove} onMouseLeave={onLeave} style={style}>
       {children}
       {show && text && (
         <span style={{
-          position: "fixed", left: pos.x + 12, top: pos.y - 8, zIndex: 999,
-          padding: "6px 10px", borderRadius: 8, fontSize: 12, fontWeight: 500,
+          position: "fixed", left: Math.min(pos.x + 12, window.innerWidth - 280), top: pos.y - 28, zIndex: 999,
+          padding: "5px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500,
           background: "var(--dropdown-bg)", border: "1px solid var(--border-10)",
-          boxShadow: "0 4px 16px rgba(0,0,0,.25)", color: "var(--text)",
-          whiteSpace: "nowrap", pointerEvents: "none", maxWidth: 340,
+          boxShadow: "0 4px 16px rgba(0,0,0,.3)", color: "var(--text)",
+          whiteSpace: "nowrap", pointerEvents: "none",
         }}>{text}</span>
       )}
     </span>
+  );
+}
+
+// Multi-select nation picker for filter
+function MultiNationSelect({ nations, selected, onChange, label, color }) {
+  var [q, setQ] = useState("");
+  var [open, setOpen] = useState(false);
+  var ref = useRef(null);
+  useEffect(function() {
+    var h = function(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return function() { document.removeEventListener("mousedown", h); };
+  }, []);
+  var fl = useMemo(function() {
+    return nations.filter(function(p) { return p[0].toLowerCase().indexOf(q.toLowerCase()) >= 0; });
+  }, [nations, q]);
+  var selNames = selected.map(function(i) { return nations.find(function(p) { return p[1] === i; }); }).filter(Boolean).map(function(p) { return p[0]; });
+  var displayText = selected.length === 0 ? "All nations" : selNames.length <= 2 ? selNames.join(", ") : selNames.length + " selected";
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      {label && <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{label}</div>}
+      <div onClick={function() { setOpen(!open); setQ(""); }}
+        style={{ padding: "8px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, background: "var(--input-bg)",
+          border: "1px solid " + (selected.length > 0 ? color + "44" : "var(--border-10)"), color: selected.length > 0 ? color : "var(--text-40)",
+          cursor: "pointer", minWidth: 200, userSelect: "none" }}>
+        {displayText}
+      </div>
+      {open && (
+        <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50, marginTop: 4,
+          maxHeight: 280, overflowY: "auto", borderRadius: 8, background: "var(--dropdown-bg)",
+          border: "1px solid var(--border-10)", boxShadow: "var(--dropdown-shadow)", minWidth: 220 }}>
+          <div style={{ padding: "4px 8px", borderBottom: "1px solid var(--border)" }}>
+            <input value={q} onChange={function(e) { setQ(e.target.value); }} placeholder="Search..."
+              style={{ width: "100%", padding: "5px 8px", borderRadius: 4, fontSize: 12, background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }}
+              onClick={function(e) { e.stopPropagation(); }} autoFocus />
+          </div>
+          {selected.length > 0 && (
+            <div onClick={function() { onChange([]); }} style={{ padding: "6px 14px", fontSize: 12, color: "var(--text-30)", cursor: "pointer", borderBottom: "1px solid var(--border)" }}
+              onMouseEnter={function(e) { e.target.style.background = "var(--hover-bg)"; }} onMouseLeave={function(e) { e.target.style.background = "transparent"; }}>
+              Clear all
+            </div>
+          )}
+          {fl.map(function(p) {
+            var isSel = selected.indexOf(p[1]) >= 0;
+            return (
+              <div key={p[1]} onClick={function() {
+                if (isSel) onChange(selected.filter(function(x) { return x !== p[1]; }));
+                else onChange(selected.concat([p[1]]));
+              }} style={{ padding: "5px 14px", fontSize: 12, color: isSel ? color : "var(--text-60)", cursor: "pointer",
+                fontWeight: isSel ? 700 : 400, background: isSel ? color + "10" : "transparent",
+                borderBottom: "1px solid var(--text-04)", display: "flex", alignItems: "center", gap: 6 }}
+                onMouseEnter={function(e) { e.currentTarget.style.background = isSel ? color + "18" : "var(--hover-bg)"; }}
+                onMouseLeave={function(e) { e.currentTarget.style.background = isSel ? color + "10" : "transparent"; }}>
+                <span style={{ width: 14, height: 14, borderRadius: 3, border: "1.5px solid " + (isSel ? color : "var(--text-20)"),
+                  background: isSel ? color : "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 10, color: "#fff", flexShrink: 0 }}>{isSel ? "\u2713" : ""}</span>
+                {p[0]}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -33,13 +95,14 @@ export default function VotingScoreboard() {
   var [edData, setEdData] = useState(null);
   var [ed, setEd] = useState(null);
   var [subs, setSubs] = useState([0]);
+  var [multiSub, setMultiSub] = useState(false);
   var [selNation, setSelNation] = useState(null);
   var [view, setView] = useState("scoreboard");
   var [expandAll, setExpandAll] = useState(false);
   var [searchQ, setSearchQ] = useState("");
   var [brkEdFrom, setBrkEdFrom] = useState(null);
   var [brkEdTo, setBrkEdTo] = useState(null);
-  var [secNation, setSecNation] = useState(null);
+  var [secNations, setSecNations] = useState([]);
 
   useEffect(function() {
     Promise.all([loadData("voting"), loadData("editions")]).then(function(arr) {
@@ -61,11 +124,17 @@ export default function VotingScoreboard() {
     return Array.from(new Set(D.r.filter(function(r) { return r[0] === ed; }).map(function(r) { return r[1]; }))).sort();
   }, [D, ed]);
 
-  function toggleSub(s) {
-    setSubs(function(prev) {
-      if (prev.indexOf(s) >= 0) { var n = prev.filter(function(x) { return x !== s; }); return n.length > 0 ? n : [s]; }
-      return prev.concat([s]);
-    });
+  function handleSubClick(s, e) {
+    if (multiSub || e.shiftKey) {
+      // multi-select mode
+      setSubs(function(prev) {
+        if (prev.indexOf(s) >= 0) { var n = prev.filter(function(x) { return x !== s; }); return n.length > 0 ? n : [s]; }
+        return prev.concat([s]);
+      });
+    } else {
+      // single-select mode
+      setSubs([s]);
+    }
   }
 
   // Build entry lookup: edition -> nation name -> { artist, song }
@@ -136,19 +205,19 @@ export default function VotingScoreboard() {
         var ri = pairs[i];
         if (ri === vi) continue;
         if (ri === selNation && vi !== selNation) {
-          if (secNation != null && vi !== secNation) continue;
+          if (secNations.length > 0 && secNations.indexOf(vi) < 0) continue;
           if (!received[redition]) received[redition] = {};
           received[redition][vi] = (received[redition][vi] || 0) + pairs[i + 1];
         }
         if (vi === selNation && ri !== selNation) {
-          if (secNation != null && ri !== secNation) continue;
+          if (secNations.length > 0 && secNations.indexOf(ri) < 0) continue;
           if (!given[redition]) given[redition] = {};
           given[redition][ri] = (given[redition][ri] || 0) + pairs[i + 1];
         }
       }
     });
     return { received: received, given: given };
-  }, [D, selNation, selCats, brkEdFrom, brkEdTo, secNation]);
+  }, [D, selNation, selCats, brkEdFrom, brkEdTo, secNations]);
 
   if (!D) return <Loader t="Loading voting data..." />;
 
@@ -165,10 +234,11 @@ export default function VotingScoreboard() {
   var sq = searchQ.toLowerCase().trim();
   var sortedNations = nn.slice().map(function(n, i) { return [n, i]; }).sort(function(a, b) { return a[0].localeCompare(b[0]); });
   var iStyle = { width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" };
+  var secNationNames = secNations.map(function(i) { return nn[i]; }).filter(Boolean);
 
   return (
     <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px" }}>
-      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,4vw,34px)", fontWeight: 900, background: "var(--grad-title)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4 }}>{"Voting Scoreboard"}</h1>
+      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,4vw,34px)", fontWeight: 900, background: "var(--grad-title)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4 }}>Voting Scoreboard</h1>
       <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 16 }}>{"Detailed voting data for editions " + D.e[0] + "\u2013" + D.e[1]}</p>
 
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 16 }}>
@@ -185,17 +255,22 @@ export default function VotingScoreboard() {
               style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 700, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--gold)", cursor: "pointer", fontFamily: "var(--font-display)" }}>
               {allEds.map(function(e) { return <option key={e} value={e} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{"#" + e}</option>; })}
             </select>
-            <div style={{ display: "flex", gap: 4 }}>
+            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
               {availSubs.map(function(s) {
-                return <button key={s} className={"fb " + (subs.indexOf(s) >= 0 ? "on" : "")} onClick={function() { toggleSub(s); }}>{SUB_SHORT[s] || String(s)}</button>;
+                return <button key={s} className={"fb " + (subs.indexOf(s) >= 0 ? "on" : "")} onClick={function(e) { handleSubClick(s, e); }}>{SUB_SHORT[s] || String(s)}</button>;
               })}
+              <button className={"fb" + (multiSub ? " on" : "")} onClick={function() { setMultiSub(!multiSub); }}
+                title="Toggle multi-select (or hold Shift)"
+                style={{ fontSize: 10, padding: "4px 6px", marginLeft: 2, opacity: 0.7 }}>
+                {"M"}
+              </button>
             </div>
             <span style={{ fontSize: 13, color: "var(--text-30)" }}>
               {matrix ? String(matrix.contestants.length) + " contestants, " + String(matrix.voters.length) + " voters" : "No data"}
             </span>
             <div style={{ marginLeft: "auto" }}>
               <input type="text" value={searchQ} onChange={function(e) { setSearchQ(e.target.value); }}
-                placeholder="Search nation\u2026"
+                placeholder="Search nation..."
                 style={{ padding: "7px 12px", borderRadius: 8, fontSize: 13, width: 170, background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" }} />
             </div>
           </div>
@@ -205,9 +280,9 @@ export default function VotingScoreboard() {
               <table style={{ borderCollapse: "collapse", fontSize: 12, whiteSpace: "nowrap" }}>
                 <thead>
                   <tr>
-                    <th style={{ position: "sticky", left: 0, zIndex: 3, padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 600, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "left" }}>{"Nation"}</th>
-                    <th style={{ padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 600, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "left", minWidth: 140 }}>{"Entry"}</th>
-                    <th style={{ padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 700, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "right" }}>{"Pts"}</th>
+                    <th style={{ position: "sticky", left: 0, zIndex: 3, padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 600, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "left" }}>Nation</th>
+                    <th style={{ padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 600, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "left", minWidth: 140 }}>Entry</th>
+                    <th style={{ padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 700, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "right" }}>Pts</th>
                     {matrix.voters.map(function(vi) {
                       var vName = nn[vi] || String(vi);
                       var isHl = sq && vName.toLowerCase().indexOf(sq) >= 0;
@@ -225,7 +300,6 @@ export default function VotingScoreboard() {
                     var cName = nn[ci] || String(ci);
                     var isHl = sq && cName.toLowerCase().indexOf(sq) >= 0;
                     var entry = entryLookup[String(ed)] && entryLookup[String(ed)][cName];
-                    var entryFull = entry ? entry.artist + " \u2014 " + entry.song : "";
                     var entryShort = entry
                       ? (entry.artist.length > 14 ? entry.artist.slice(0, 13) + "\u2026" : entry.artist) + " \u2014 " +
                         (entry.song.length > 16 ? entry.song.slice(0, 15) + "\u2026" : entry.song)
@@ -244,11 +318,9 @@ export default function VotingScoreboard() {
                       <td style={{
                         padding: "5px 6px", borderBottom: "1px solid var(--text-04)", fontSize: 11,
                         color: "var(--text-40)", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis",
-                        background: isHl ? "var(--gold-glow-12)" : "transparent",
+                        background: isHl ? "var(--gold-glow-12)" : "transparent", fontStyle: "italic",
                       }}>
-                        <Tooltip text={entryFull}>
-                          <span style={{ fontStyle: "italic" }}>{entryShort || "\u2014"}</span>
-                        </Tooltip>
+                        {entryShort || "\u2014"}
                       </td>
                       <td style={{
                         padding: "5px 6px", fontWeight: 700, color: "var(--blue)", textAlign: "right",
@@ -260,13 +332,16 @@ export default function VotingScoreboard() {
                       {matrix.voters.map(function(vi) {
                         var p = matrix.pts[vi] && matrix.pts[vi][ci];
                         var voterHl = sq && (nn[vi] || "").toLowerCase().indexOf(sq) >= 0;
+                        var tipText = p ? (cName + " received " + p + " pts from " + (nn[vi] || vi)) : "";
                         return <td key={vi} style={{
                           padding: "3px 2px", textAlign: "center", fontSize: 11,
                           fontWeight: p >= 10 ? 700 : p ? 500 : 400,
                           color: p >= 12 ? "var(--gold)" : p >= 10 ? "var(--blue)" : p ? "var(--text-45)" : "var(--text-10)",
                           background: (isHl || voterHl) ? "var(--gold-glow-12)" : cellBg(p),
                           borderBottom: "1px solid var(--text-04)", minWidth: 22,
-                        }}>{p ? String(p) : ""}</td>;
+                        }}>
+                          {p ? <Tooltip text={tipText}><span>{String(p)}</span></Tooltip> : ""}
+                        </td>;
                       })}
                     </tr>;
                   })}
@@ -282,27 +357,24 @@ export default function VotingScoreboard() {
         <div className="fi">
           <div style={{ display: "flex", gap: 16, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 16 }}>
             <div>
-              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Select Nation"}</div>
-              <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); setExpandAll(false); setSecNation(null); }}
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Select Nation</div>
+              <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); setExpandAll(false); setSecNations([]); }}
                 style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--blue)", cursor: "pointer", minWidth: 200 }}>
-                <option value="">{"Choose..."}</option>
+                <option value="">Choose...</option>
                 {sortedNations.map(function(pair) {
                   return <option key={pair[1]} value={pair[1]} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{pair[0]}</option>;
                 })}
               </select>
             </div>
+            <MultiNationSelect
+              nations={sortedNations}
+              selected={secNations}
+              onChange={function(v) { setSecNations(v); setExpandAll(false); }}
+              label={"Filter " + (view === "received" ? "From" : "To") + " Nation(s)"}
+              color="var(--purple)"
+            />
             <div>
-              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Filter " + (view === "received" ? "From" : "To") + " Nation"}</div>
-              <select value={secNation != null ? secNation : ""} onChange={function(e) { setSecNation(e.target.value !== "" ? Number(e.target.value) : null); setExpandAll(false); }}
-                style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--purple)", cursor: "pointer", minWidth: 200 }}>
-                <option value="">{"All nations"}</option>
-                {sortedNations.map(function(pair) {
-                  return <option key={pair[1]} value={pair[1]} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{pair[0]}</option>;
-                })}
-              </select>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Edition Range"}</div>
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Edition Range</div>
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                 <input type="number" value={brkEdFrom || ""} onChange={function(e) { setBrkEdFrom(Number(e.target.value) || D.e[0]); }} style={iStyle} />
                 <span style={{ color: "var(--text-15)", fontSize: 12 }}>{"\u2013"}</span>
@@ -310,7 +382,7 @@ export default function VotingScoreboard() {
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>{"Subevent (none = all)"}</div>
+              <div style={{ fontSize: 11, color: "var(--text-30)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Subevent (none = all)</div>
               <div style={{ display: "flex", gap: 4 }}>
                 {[[0, "GF"], [3, "WL"], [1, "SF1"], [2, "SF2"], [4, "R1"], [5, "R2"]].map(function(pair) {
                   return <button key={pair[0]} className={"fb " + (selCats.indexOf(pair[0]) >= 0 ? "on" : "")} onClick={function() { toggleCat(pair[0]); }}>{pair[1]}</button>;
@@ -323,7 +395,7 @@ export default function VotingScoreboard() {
           {selNation != null && breakdown && (function() {
             var dataMap = view === "received" ? breakdown.received : breakdown.given;
             var eds = Object.keys(dataMap).map(Number).sort(function(a, b) { return a - b; });
-            if (eds.length === 0) return <div style={{ padding: 32, color: "var(--text-25)", textAlign: "center" }}>{"No voting data for " + nn[selNation] + (secNation != null ? " with " + nn[secNation] : "") + " in this range"}</div>;
+            if (eds.length === 0) return <div style={{ padding: 32, color: "var(--text-25)", textAlign: "center" }}>{"No voting data for " + nn[selNation] + (secNations.length > 0 ? " with " + secNationNames.join(", ") : "") + " in this range"}</div>;
 
             var allNations = new Set();
             eds.forEach(function(eid) { Object.keys(dataMap[eid]).forEach(function(k) { allNations.add(Number(k)); }); });
@@ -338,7 +410,7 @@ export default function VotingScoreboard() {
               <div>
                 <h3 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, marginBottom: 4, color: "var(--blue)" }}>
                   {nn[selNation] + " \u2014 Points " + (view === "received" ? "Received" : "Given")}
-                  {secNation != null && <span style={{ color: "var(--purple)" }}>{" " + (view === "received" ? "from " : "to ") + nn[secNation]}</span>}
+                  {secNations.length > 0 && <span style={{ color: "var(--purple)" }}>{" " + (view === "received" ? "from " : "to ") + secNationNames.join(", ")}</span>}
                 </h3>
                 <p style={{ fontSize: 12, color: "var(--text-30)", marginBottom: 12 }}>
                   {eds.length + " editions \u00B7 " + nList.length + " " + (view === "received" ? "voters" : "recipients") + " \u00B7 " + grandTotal + " total points"}
@@ -350,7 +422,7 @@ export default function VotingScoreboard() {
                         <th style={{ position: "sticky", left: 0, zIndex: 2, padding: "6px 8px", background: "var(--bg)", borderBottom: "2px solid var(--border)", fontWeight: 600, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase" }}>
                           {view === "received" ? "From voter" : "To nation"}
                         </th>
-                        <th style={{ padding: "6px 6px", borderBottom: "2px solid var(--border)", fontWeight: 700, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "right" }}>{"Total"}</th>
+                        <th style={{ padding: "6px 6px", borderBottom: "2px solid var(--border)", fontWeight: 700, color: "var(--text-30)", fontSize: 10, textTransform: "uppercase", textAlign: "right" }}>Total</th>
                         {eds.map(function(eid) {
                           return <th key={eid} style={{ padding: "4px 2px", borderBottom: "2px solid var(--border)", fontWeight: 500, color: "var(--text-40)", fontSize: 10, textAlign: "center", minWidth: 28 }}>{String(eid)}</th>;
                         })}

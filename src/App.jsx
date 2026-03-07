@@ -33,6 +33,7 @@ const RecordsPage = lazy(() => import('./pages/RecordsPage'));
 const VotingPage = lazy(() => import('./pages/VotingPage'));
 const VotingScoreboard = lazy(() => import('./pages/VotingScoreboard'));
 const RosterPage = lazy(() => import('./pages/RosterPage'));
+const ValidationPage = lazy(() => import('./pages/ValidationPage'));
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/voting" element={<VotingPage />} />
             <Route path="/scoreboard" element={<VotingScoreboard />} />
             <Route path="/roster" element={<RosterPage />} />
+            <Route path="/validation" element={<ValidationPage />} />
           </Routes>
           </Suspense>
         </ErrorBoundary>

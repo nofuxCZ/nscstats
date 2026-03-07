@@ -27,6 +27,7 @@ function NPanel({ names, loveLists, idx, top, color }) {
   const Sec = ({ title, items, renderItem }) => (
     <div style={{ marginBottom: 20 }}>
       <div style={{ fontSize: 12, color: "var(--text-35)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>{title}</div>
+      {items.length === 0 && <div style={{ fontSize: 12, color: "var(--text-20)" }}>No data</div>}
       {items.map(renderItem)}
     </div>
   );
@@ -93,11 +94,9 @@ export default function VotingPage() {
       const key = ed + "_" + cat + "_" + vi;
       const m = new Map();
       if (isp) {
-        // Self-vote adjustment for similarity: voter gives themselves 12
         m.set(vi, 12);
         for (let i = 0; i < pairs.length; i += 2) {
           const ni = pairs[i], raw = pairs[i + 1];
-          // Shift: 12→10, 10→8, others→pts-1 (1→0 which is dropped)
           const adj = raw === 12 ? 10 : raw === 10 ? 8 : raw - 1;
           if (adj > 0) m.set(ni, adj);
         }
@@ -114,7 +113,6 @@ export default function VotingPage() {
   }, [D]);
 
   const MAX = 448;
-  // Subevent codes: 0=GF, 1=S1, 2=S2, 3=WL, 4=R1, 5=R2
   const ALL_CATS = [0, 1, 2, 3, 4, 5];
   const GF_CATS = [0, 3];
   const SF_CATS = [1, 2, 4, 5];
@@ -125,7 +123,6 @@ export default function VotingPage() {
     for (const ed of AE) {
       if (ed < edFrom || ed > edTo) continue;
       if (catFilter === "all") {
-        // Average all subevents within same edition into one score
         let edScore = 0, edFound = 0;
         for (const cat of ALL_CATS) {
           const m1 = RM.get(ed + "_" + cat + "_" + v1);
@@ -167,6 +164,34 @@ export default function VotingPage() {
     r.sort((a, b) => b.s - a.s);
     return r.slice(0, 10);
   }, [cmp, csim, D]);
+
+  // Compute filtered love lists (reacts to edFrom/edTo/catFilter)
+  const filteredLoveLists = useMemo(() => {
+    if (!D) return [];
+    const activeCats = catFilter === "gf" ? GF_CATS : catFilter === "sf" ? SF_CATS : ALL_CATS;
+    // Accumulate: from -> to -> { total, count (editions) }
+    const map = new Map();
+    const edSeen = new Map(); // key "from_to" -> Set of editions
+    for (const rec of D.r) {
+      const [ed, cat, vi, pairs] = rec;
+      if (ed < edFrom || ed > edTo) continue;
+      if (activeCats.indexOf(cat) < 0) continue;
+      for (let i = 0; i < pairs.length; i += 2) {
+        const ri = pairs[i], pts = pairs[i + 1];
+        if (ri === vi) continue;
+        const key = vi + "_" + ri;
+        if (!map.has(key)) map.set(key, { from: vi, to: ri, total: 0, eds: new Set() });
+        const e = map.get(key);
+        e.total += pts;
+        e.eds.add(ed);
+      }
+    }
+    const result = [];
+    for (const [, v] of map) {
+      result.push([v.from, v.to, v.total, v.eds.size]);
+    }
+    return result;
+  }, [D, edFrom, edTo, catFilter]);
 
   const doAll = useCallback(() => {
     setComputing(true);
@@ -251,8 +276,8 @@ export default function VotingPage() {
             </div>
           )}
           <div className="g2" style={{ display: "grid", gridTemplateColumns: cmp != null ? "1fr 1fr" : "1fr", gap: 20 }}>
-            {sel != null && <NPanel names={nn} loveLists={D.l} idx={sel} top={nTop} color="var(--blue)" />}
-            {cmp != null && <NPanel names={nn} loveLists={D.l} idx={cmp} top={cTop} color="var(--purple)" />}
+            {sel != null && <NPanel names={nn} loveLists={filteredLoveLists} idx={sel} top={nTop} color="var(--blue)" />}
+            {cmp != null && <NPanel names={nn} loveLists={filteredLoveLists} idx={cmp} top={cTop} color="var(--purple)" />}
           </div>
         </div>
       )}
@@ -291,12 +316,12 @@ export default function VotingPage() {
       {view === "strongest" && (
         <div className="fi">
           <p style={{ fontSize: 12, color: "var(--text-30)", marginBottom: 16 }}>
-            Top mutual point exchanges — total points given from A→B + B→A across all shared editions.
+            Top mutual point exchanges (A→B + B→A) for editions {edFrom}–{edTo}{catFilter !== "all" ? " (" + catFilter.toUpperCase() + " only)" : ""}.
           </p>
           {(() => {
-            // Build mutual pairs from loveLists
+            // Build mutual pairs from filtered love lists
             const pairMap = new Map();
-            for (const [from, to, total, count] of D.l) {
+            for (const [from, to, total, count] of filteredLoveLists) {
               const key = Math.min(from, to) + "_" + Math.max(from, to);
               if (!pairMap.has(key)) pairMap.set(key, { a: Math.min(from, to), b: Math.max(from, to), ab: 0, ba: 0, ca: 0, cb: 0 });
               const p = pairMap.get(key);
@@ -305,19 +330,18 @@ export default function VotingPage() {
             const pairs = [...pairMap.values()].map(p => ({
               ...p,
               mutual: p.ab + p.ba,
-              avg: Math.round((p.ab + p.ba) / Math.max(p.ca, p.cb, 1)),
             })).sort((a, b) => b.mutual - a.mutual);
             const maxMutual = pairs[0]?.mutual || 1;
 
             return (
               <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 2px" }}>
                 <thead><tr>
-                  {["#", "Nation A", "→", "Nation B", "←", "Mutual Total", "Editions"].map((h, i) => (
+                  {["#", "Nation A", "A→B", "Nation B", "B→A", "Mutual Total", "Editions"].map((h, i) => (
                     <th key={h} style={{
                       padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--text-30)",
-                      textTransform: "uppercase", textAlign: i >= 5 ? "center" : i >= 2 && i <= 4 ? "right" : "left",
+                      textTransform: "uppercase", textAlign: i >= 5 ? "center" : i === 2 || i === 4 ? "right" : "left",
                       borderBottom: "1px solid var(--border-08)",
-                      width: [36, null, 60, null, 60, 160, 50][i],
+                      width: [36, null, 55, null, 55, 160, 50][i],
                     }}>{h}</th>
                   ))}
                 </tr></thead>

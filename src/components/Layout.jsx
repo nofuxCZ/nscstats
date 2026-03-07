@@ -9,6 +9,7 @@ const navItems = [
   { path: '/records', label: 'Records' },
   { path: '/voting', label: 'Voting' },
   { path: '/scoreboard', label: 'Scoreboard' },
+  { path: '/validation', label: 'Validation' },
 ];
 
 export default function Layout({ children }) {
