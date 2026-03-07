@@ -395,7 +395,7 @@ export default function VotingScoreboard() {
                 {selCats.length > 0 && <button className="xb" onClick={function() { setSelCats([]); }} style={{ fontSize: 11, padding: "3px 8px" }}>All</button>}
               </div>
             </div>
-            <RosterFilter value={rosterFilter} onChange={function(v) { setRosterFilter(v); setSelNation(null); setSecNations([]); }} />
+            <RosterFilter value={rosterFilter} onChange={function(v) { setRosterFilter(v); }} />
           </div>
 
           {selNation != null && breakdown && (function() {

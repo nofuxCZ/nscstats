@@ -282,7 +282,10 @@ def parse_voting_sheet(ws, subevent: str) -> list[dict]:
             continue
         
         nation = safe_str(row[nation_col])
-        if not nation or len(nation) < 2:
+        if not nation:
+            continue
+        # Single-char names: only allow known nation names (e.g. "Ÿ")
+        if len(nation) < 2 and nation.lower() not in ("ÿ", "y"):
             continue
         # Skip if nation looks like a number
         if re.match(r"^\d+\.?\d*$", nation):

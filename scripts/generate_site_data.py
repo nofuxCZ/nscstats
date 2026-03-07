@@ -315,6 +315,7 @@ def main():
             "waiting iist of shelly & nici": "Waiting Iist of Shelley & Nici",
             "whispering isles": "Whispering Isles", "whispering isles (wl)": "Whispering Isles",
             "wi": "Whispering Isles", "strenci": "Grand Duchy of Strenci",
+            "meridia": "Federal Republic of Meridia",
             "celibate union of men": "Celibate Union of Men",
         }
         for k, v in _aliases.items():

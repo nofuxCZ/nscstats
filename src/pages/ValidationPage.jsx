@@ -9,11 +9,20 @@ var SUB_LABELS = { 0: "GF", 1: "SF1", 2: "SF2" };
 // Name aliases: DB name -> voting name
 var NAME_ALIASES = {
   "FR Meridia": "Federal Republic of Meridia",
+  "Meridia": "Federal Republic of Meridia",
   "Grandy Duchy of Strenci": "Grand Duchy of Strenci",
   "GD Strenci": "Grand Duchy of Strenci",
   "UK Destrion": "United Kingdom of Destrion",
   "Dez Reublic": "Dež Republic",
+  "Waiting list of Shelley & Nici": "Waiting Iist of Shelley & Nici",
+  "Waiting Iist of Shelley & Nici, Tanner & Josh, Tiffany & Krista and Denise & James Earl": "Waiting Iist of Shelley & Nici",
+  "Emsfrõnt": "Emsfrynt",
 };
+
+// Strip diacritics for fuzzy matching
+function stripDiacritics(s) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 // Try to find nation index with fuzzy matching
 function findNationIdx(nat, nn, nnLower) {
@@ -28,7 +37,31 @@ function findNationIdx(nat, nn, nnLower) {
   if (nnLower[low] !== undefined) return nnLower[low];
   // Alias lowercase
   if (alias) { var al = alias.toLowerCase(); if (nnLower[al] !== undefined) return nnLower[al]; }
+  // Diacritics-stripped
+  var stripped = stripDiacritics(nat);
+  for (var i = 0; i < nn.length; i++) {
+    if (stripDiacritics(nn[i]) === stripped) return i;
+  }
   return -1;
+}
+
+// Find nation idx, preferring whichever has actual votes for this edition+subevent
+function findBestNationIdx(nat, nn, nnLower, votingTotals) {
+  var directIdx = nn.indexOf(nat);
+  var aliasIdx = -1;
+  var alias = NAME_ALIASES[nat];
+  if (alias) aliasIdx = nn.indexOf(alias);
+
+  // If only one found, use it
+  if (directIdx >= 0 && aliasIdx < 0) return directIdx;
+  if (aliasIdx >= 0 && directIdx < 0) return aliasIdx;
+  if (directIdx < 0 && aliasIdx < 0) return findNationIdx(nat, nn, nnLower); // fallback to fuzzy
+
+  // Both found — prefer whichever has votes in this context
+  var directPts = votingTotals[directIdx] || 0;
+  var aliasPts = votingTotals[aliasIdx] || 0;
+  if (aliasPts > 0 && directPts === 0) return aliasIdx;
+  return directIdx; // default to direct
 }
 
 export default function ValidationPage() {
@@ -85,7 +118,7 @@ export default function ValidationPage() {
           var dbPts = entry[5] || 0;
           var place = entry[4];
           // Find nation index
-          var ni = findNationIdx(nat, nn, nnLower);
+          var ni = findBestNationIdx(nat, nn, nnLower, votingTotals);
           var votPts = ni >= 0 ? (votingTotals[ni] || 0) : -1;
           totalChecked++;
 
