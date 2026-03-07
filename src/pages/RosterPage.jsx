@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
 import { Loader } from '../components/Shared';
 
@@ -36,6 +36,14 @@ export default function RosterPage() {
         return r.n.toLowerCase().includes(lq) || r.o.toLowerCase().includes(lq) || (r.ln || "").toLowerCase().includes(lq);
       });
     }
+    // Sort: current first, then WL, then defunct; alphabetically within each group
+    var statusOrder = { current: 0, wl: 1, defunct: 2 };
+    rows = rows.slice().sort(function(a, b) {
+      var sa = statusOrder[a.s] != null ? statusOrder[a.s] : 3;
+      var sb = statusOrder[b.s] != null ? statusOrder[b.s] : 3;
+      if (sa !== sb) return sa - sb;
+      return a.n.localeCompare(b.n);
+    });
     return rows;
   }, [roster, filter, q]);
 
@@ -82,6 +90,7 @@ export default function RosterPage() {
     clean.forEach(function(r) { if (r.o && !ol[r.o]) ol[r.o] = r.ln; });
     var blob = new Blob([JSON.stringify({ r: clean, ol: ol, on: on }, null, 2)], { type: "application/json" });
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "roster.json"; a.click();
+    setChanges(0);
   }
   function exportCSV() {
     var h = "Nation,Status,Owner,Notes\n";
@@ -102,7 +111,7 @@ export default function RosterPage() {
       <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px,4vw,34px)", fontWeight: 900, background: "var(--grad-title)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4 }}>Nation Roster</h1>
       <p style={{ fontSize: 13, color: "var(--text-35)", marginBottom: 16 }}>
         {stats.total + " nations \u00B7 " + stats.current + " current \u00B7 " + stats.wl + " WL \u00B7 " + stats.defunct + " defunct"}
-        {authed && changes > 0 && <span style={{ marginLeft: 12, color: "var(--gold)", fontWeight: 600 }}>{changes + " unsaved change" + (changes > 1 ? "s" : "")}</span>}
+        {authed && changes > 0 && <span style={{ marginLeft: 12, color: "var(--gold)", fontWeight: 600 }}>{changes + " change" + (changes > 1 ? "s" : "") + " — Export JSON to save!"}</span>}
       </p>
 
       {/* Filters + auth */}
@@ -125,7 +134,9 @@ export default function RosterPage() {
         {authed && (
           <>
             <button className="xb" onClick={function() { setAddMode(!addMode); }} style={{ background: addMode ? "var(--gold-glow-12)" : undefined }}>+ Add Nation</button>
-            <button className="xb" onClick={exportJSON}>Export JSON</button>
+            <button className="xb" onClick={exportJSON} style={changes > 0 ? { background: "var(--gold-glow-25)", color: "var(--gold)", fontWeight: 700, border: "1px solid var(--gold)" } : undefined}>
+              {changes > 0 ? "\u2B07 Save JSON (" + changes + ")" : "Export JSON"}
+            </button>
             <button className="xb" onClick={exportCSV}>Export CSV</button>
           </>
         )}
@@ -167,10 +178,27 @@ export default function RosterPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(function(r) {
+            {filtered.map(function(r, idx) {
+              var colCount = authed ? 5 : 4;
+              // Show group header when status changes
+              var prevStatus = idx > 0 ? filtered[idx - 1].s : null;
+              var groupHeader = (filter === "all" && r.s !== prevStatus) ? (
+                <tr key={"group-" + r.s}>
+                  <td colSpan={colCount} style={{
+                    padding: "10px 10px 6px", fontSize: 12, fontWeight: 700, letterSpacing: 1,
+                    textTransform: "uppercase",
+                    color: r.s === "current" ? "var(--green, #48bb78)" : r.s === "wl" ? "var(--gold)" : "var(--text-30)",
+                    borderBottom: "2px solid " + (r.s === "current" ? "var(--green, #48bb78)" : r.s === "wl" ? "var(--gold)" : "var(--text-10)"),
+                  }}>
+                    {r.s === "current" ? "Current Nations" : r.s === "wl" ? "Waiting List" : "Defunct Nations"}
+                  </td>
+                </tr>
+              ) : null;
               var isEditing = authed && editIdx === r._id;
               if (isEditing) {
-                return <tr key={r._id} style={{ background: "var(--gold-glow-12)" }}>
+                return <React.Fragment key={r._id}>
+                  {groupHeader}
+                  <tr style={{ background: "var(--gold-glow-12)" }}>
                   <td style={{ padding: "6px 10px" }}><input value={editData.n} onChange={function(e) { setEditData(Object.assign({}, editData, { n: e.target.value })); }} style={iStyle} /></td>
                   <td style={{ padding: "6px 10px" }}>
                     <select value={editData.s} onChange={function(e) { setEditData(Object.assign({}, editData, { s: e.target.value })); }} style={Object.assign({}, iStyle, { cursor: "pointer" })}>
@@ -183,9 +211,11 @@ export default function RosterPage() {
                     <button className="xb" onClick={saveEdit} style={{ fontSize: 11, marginRight: 4 }}>Save</button>
                     <button className="xb" onClick={cancelEdit} style={{ fontSize: 11 }}>Cancel</button>
                   </td>
-                </tr>;
+                </tr></React.Fragment>;
               }
-              return <tr key={r._id}>
+              return <React.Fragment key={r._id}>
+                {groupHeader}
+                <tr>
                 <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600, color: "var(--text)" }}>{r.n}</td>
                 <td style={{ padding: "8px 10px" }}>
                   <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: r.s === "current" ? "rgba(72,187,120,0.15)" : r.s === "wl" ? "var(--gold-glow-12)" : "var(--text-04)", color: statusColors[r.s] }}>
@@ -198,13 +228,13 @@ export default function RosterPage() {
                   <button className="xb" onClick={function() { startEdit(r); }} style={{ fontSize: 11, marginRight: 4 }}>Edit</button>
                   <button className="xb" onClick={function() { deleteNation(r._id); }} style={{ fontSize: 11, color: "var(--red, #e74c3c)" }}>Del</button>
                 </td>}
-              </tr>;
+              </tr></React.Fragment>;
             })}
           </tbody>
         </table>
       </div>
       <div style={{ marginTop: 16, fontSize: 12, color: "var(--text-25)" }}>
-        {"Showing " + filtered.length + " of " + roster.length + " nations." + (authed ? " Export JSON to update the site, or CSV for Excel." : "")}
+        {"Showing " + filtered.length + " of " + roster.length + " nations." + (authed ? " Edits are in-memory only \u2014 click Save JSON to download and replace public/data/roster.json." : "")}
       </div>
     </div>
   );
