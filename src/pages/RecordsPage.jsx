@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../data/loader';
-import { Loader, SN } from '../components/Shared';
+import { Loader, SN, useRosterStatus, RosterFilter, filterByRoster } from '../components/Shared';
 
 const TABS = [
   { k: "records", l: "All-Time Records" },
@@ -21,6 +21,8 @@ export default function RecordsPage() {
   const [recSort, setRecSort] = useState({ col: null, dir: "asc" });
   const [recEdFrom, setRecEdFrom] = useState("");
   const [recEdTo, setRecEdTo] = useState("");
+  const [rosterFilter, setRosterFilter] = useState("all");
+  const rosterMap = useRosterStatus();
 
   useEffect(() => {
     Promise.all([loadData("database"), loadData("nations")])
@@ -138,6 +140,20 @@ export default function RecordsPage() {
 
   if (!data) return <Loader t="Loading records..." />;
 
+  // Apply roster filter to nation-based lists
+  var rAllowed = filterByRoster(
+    rosterMap ? [...rosterMap.keys()] : [],
+    rosterMap, rosterFilter
+  );
+  var rfn = function(profile) {
+    if (!rAllowed) return true;
+    return rAllowed.has(profile.n);
+  };
+  var rfe = function(entry) {
+    if (!rAllowed) return true;
+    return rAllowed.has(entry.nation);
+  };
+
   var S = { padding: "8px 10px", fontSize: 13 };
   var SC = { padding: "8px 10px", fontSize: 13, textAlign: "center" };
   var SR = { padding: "8px 10px", fontSize: 13, textAlign: "right", fontWeight: 600 };
@@ -219,6 +235,9 @@ export default function RecordsPage() {
         {(recEdFrom || recEdTo) && (
           <span style={{ fontSize: 12, color: "var(--gold)" }}>{"Showing editions " + (recEdFrom || "1") + "\u2013" + (recEdTo || "latest") + " (applies to Records, Draw Stats, Artists)"}</span>
         )}
+        <div style={{ marginLeft: "auto" }}>
+          <RosterFilter value={rosterFilter} onChange={setRosterFilter} />
+        </div>
       </div>
 
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 24, overflowX: "auto" }}>
@@ -231,7 +250,7 @@ export default function RecordsPage() {
             {Object.entries(recCfg).map(function(kv) { return <button key={kv[0]} className={"fb " + (recordType === kv[0] ? "on" : "")} onClick={function() { setRecordType(kv[0]); setExpanded(false); }}>{kv[1]}</button>; })}
           </div>
           {(() => {
-            var recs = data.records[recordType] || [];
+            var recs = (data.records[recordType] || []).filter(rfe);
             // Apply record sort if active
             if (recSort.col) {
               recs = recs.slice().sort(function(a, b) {
@@ -314,7 +333,7 @@ export default function RecordsPage() {
                 })}
               </tr></thead>
               <tbody>
-                {slice(data.boards[nationBoard] || []).map(function(n, i) {
+                {(() => { var fb = (data.boards[nationBoard] || []).filter(rfn); return slice(fb).map(function(n, i) {
                   return <tr key={String(n.n)}>
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
                     <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600 }}>{String(n.n)}</td>
@@ -322,11 +341,11 @@ export default function RecordsPage() {
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", color: "var(--text-45)" }}>{String(n.gf)}</td>
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", color: "var(--text-45)" }}>{String(n.te)}</td>
                   </tr>;
-                })}
+                }); })()}
               </tbody>
             </table>
           </div>
-          {expandBtn((data.boards[nationBoard] || []).length)}
+          {expandBtn((data.boards[nationBoard] || []).filter(rfn).length)}
         </div>
       )}
 
@@ -341,7 +360,7 @@ export default function RecordsPage() {
                 })}
               </tr></thead>
               <tbody>
-                {slice(data.qualRates).map(function(n, i) {
+                {(() => { var fq = data.qualRates.filter(rfn); return slice(fq).map(function(n, i) {
                   return <tr key={String(n.n)}>
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center", fontWeight: 700, color: medal(i) }}>{String(i + 1)}</td>
                     <td style={{ padding: "8px 10px", fontSize: 13, fontWeight: 600 }}>{String(n.n)}</td>
@@ -350,11 +369,11 @@ export default function RecordsPage() {
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center" }}>{String(n.sf)}</td>
                     <td style={{ padding: "8px 10px", fontSize: 13, textAlign: "center" }}>{String(n.gf)}</td>
                   </tr>;
-                })}
+                }); })()}
               </tbody>
             </table>
           </div>
-          {expandBtn(data.qualRates.length)}
+          {expandBtn(data.qualRates.filter(rfn).length)}
         </div>
       )}
 

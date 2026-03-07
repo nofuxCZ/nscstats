@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { loadData } from '../data/loader';
-import { Loader, NP } from '../components/Shared';
+import { Loader, NP, useRosterStatus, RosterFilter, filterByRoster } from '../components/Shared';
 
 function SimBar({ v }) {
   const c = v > 60 ? "var(--gold)" : v > 40 ? "var(--blue)" : "var(--text-40)";
@@ -75,6 +75,8 @@ export default function VotingPage() {
   const [allPairs, setAllPairs] = useState(null);
   const [computing, setComputing] = useState(false);
   const [catFilter, setCatFilter] = useState("all");
+  const [rosterFilter, setRosterFilter] = useState("all");
+  const rosterMap = useRosterStatus();
 
   useEffect(() => {
     loadData("voting").then(d => {
@@ -165,7 +167,17 @@ export default function VotingPage() {
     return r.slice(0, 10);
   }, [cmp, csim, D]);
 
-  // Compute filtered love lists (reacts to edFrom/edTo/catFilter)
+  // Compute allowed nation indices based on roster filter
+  const allowedNations = useMemo(() => {
+    if (!D || !rosterMap || rosterFilter === "all") return null;
+    const allowed = filterByRoster([...rosterMap.keys()], rosterMap, rosterFilter);
+    if (!allowed) return null;
+    const idxSet = new Set();
+    D.n.forEach((name, i) => { if (allowed.has(name)) idxSet.add(i); });
+    return idxSet;
+  }, [D, rosterMap, rosterFilter]);
+
+  // Compute filtered love lists (reacts to edFrom/edTo/catFilter/roster)
   const filteredLoveLists = useMemo(() => {
     if (!D) return [];
     const activeCats = catFilter === "gf" ? GF_CATS : catFilter === "sf" ? SF_CATS : ALL_CATS;
@@ -188,10 +200,11 @@ export default function VotingPage() {
     }
     const result = [];
     for (const [, v] of map) {
+      if (allowedNations && (!allowedNations.has(v.from) || !allowedNations.has(v.to))) continue;
       result.push([v.from, v.to, v.total, v.eds.size]);
     }
     return result;
-  }, [D, edFrom, edTo, catFilter]);
+  }, [D, edFrom, edTo, catFilter, allowedNations]);
 
   const doAll = useCallback(() => {
     setComputing(true);
@@ -207,13 +220,13 @@ export default function VotingPage() {
           for (const cat of cats) { const vs = RV.get(ed + "_" + cat) || []; for (const vi of vs) active.set(vi, (active.get(vi) || 0) + 1); }
         }
       }
-      const avs = [...active.entries()].filter(([, c]) => c >= minEd).map(([vi]) => vi).sort((a, b) => a - b);
+      const avs = [...active.entries()].filter(([vi, c]) => c >= minEd && (!allowedNations || allowedNations.has(vi))).map(([vi]) => vi).sort((a, b) => a - b);
       const pairs = [];
       for (let i = 0; i < avs.length; i++) for (let j = i + 1; j < avs.length; j++) { const r = csim(avs[i], avs[j]); if (r) pairs.push({ a: avs[i], b: avs[j], ...r }); }
       pairs.sort((a, b) => b.s - a.s);
       setAllPairs(pairs); setComputing(false);
     }, 50);
-  }, [AE, RV, edFrom, edTo, minEd, csim, catFilter, cats]);
+  }, [AE, RV, edFrom, edTo, minEd, csim, catFilter, cats, allowedNations]);
 
   const subLabel = catFilter === "all" ? "editions" : "subevents";
 
@@ -251,6 +264,7 @@ export default function VotingPage() {
               style={{ fontSize: 11, padding: "3px 10px" }}>{l}</button>
           ))}
         </div>
+        <RosterFilter value={rosterFilter} onChange={v => { setRosterFilter(v); setAllPairs(null); }} />
       </div>
       <div style={{ borderBottom: "1px solid var(--border)", display: "flex", gap: 2, marginBottom: 16 }}>
         {[["explorer", "Nation Explorer"], ["leaderboard", "All Pairs"], ["strongest", "Strongest Pairs"]].map(([k, l]) => (

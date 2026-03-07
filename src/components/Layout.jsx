@@ -10,6 +10,7 @@ const navItems = [
   { path: '/voting', label: 'Voting' },
   { path: '/scoreboard', label: 'Scoreboard' },
   { path: '/validation', label: 'Validation' },
+  { path: '/roster', label: 'Roster' },
 ];
 
 export default function Layout({ children }) {

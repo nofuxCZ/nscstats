@@ -1,4 +1,45 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { loadData } from '../data/loader';
+
+// Roster status lookup - returns Map<nationName, status>
+export function useRosterStatus() {
+  const [map, setMap] = useState(null);
+  useEffect(() => {
+    loadData("roster").then(d => {
+      const m = new Map();
+      (d.r || []).forEach(r => {
+        m.set(r.n, r.s);
+        if (r.ln && r.ln !== r.n) m.set(r.ln, r.s);
+      });
+      setMap(m);
+    }).catch(() => setMap(new Map()));
+  }, []);
+  return map;
+}
+
+// Roster filter buttons component
+export function RosterFilter({ value, onChange }) {
+  return (
+    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+      <span style={{ fontSize: 11, color: "var(--text-30)", marginRight: 2 }}>Roster</span>
+      {[["all", "All"], ["current", "Current"], ["wl", "WL"], ["defunct", "Defunct"]].map(([k, l]) => (
+        <button key={k} className={"fb " + (value === k ? "on" : "")}
+          onClick={() => onChange(k)} style={{ fontSize: 11, padding: "3px 8px" }}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
+export function filterByRoster(names, rosterMap, filter) {
+  if (!rosterMap || filter === "all") return null; // null = no filtering
+  return new Set(names.filter(n => {
+    const s = rosterMap.get(n);
+    if (filter === "current") return s === "current";
+    if (filter === "wl") return s === "wl";
+    if (filter === "defunct") return s === "defunct";
+    return true;
+  }));
+}
 
 // Subevent names and colors
 export const SN = ["GF", "SF1", "SF2", "MPQ"];

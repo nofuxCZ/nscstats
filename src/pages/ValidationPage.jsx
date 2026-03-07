@@ -6,6 +6,31 @@ import { Loader } from '../components/Shared';
 var SUB_TO_DB = { 0: "gf", 1: "sf1", 2: "sf2" };
 var SUB_LABELS = { 0: "GF", 1: "SF1", 2: "SF2" };
 
+// Name aliases: DB name -> voting name
+var NAME_ALIASES = {
+  "FR Meridia": "Federal Republic of Meridia",
+  "Grandy Duchy of Strenci": "Grand Duchy of Strenci",
+  "GD Strenci": "Grand Duchy of Strenci",
+  "UK Destrion": "United Kingdom of Destrion",
+  "Dez Reublic": "Dež Republic",
+};
+
+// Try to find nation index with fuzzy matching
+function findNationIdx(nat, nn, nnLower) {
+  // Direct match
+  var direct = nn.indexOf(nat);
+  if (direct >= 0) return direct;
+  // Alias
+  var alias = NAME_ALIASES[nat];
+  if (alias) { var ai = nn.indexOf(alias); if (ai >= 0) return ai; }
+  // Case-insensitive
+  var low = nat.toLowerCase();
+  if (nnLower[low] !== undefined) return nnLower[low];
+  // Alias lowercase
+  if (alias) { var al = alias.toLowerCase(); if (nnLower[al] !== undefined) return nnLower[al]; }
+  return -1;
+}
+
 export default function ValidationPage() {
   var [voting, setVoting] = useState(null);
   var [editions, setEditions] = useState(null);
@@ -20,6 +45,8 @@ export default function ValidationPage() {
   var results = useMemo(function() {
     if (!voting || !editions) return null;
     var nn = voting.n;
+    var nnLower = {};
+    nn.forEach(function(n, i) { nnLower[n.toLowerCase()] = i; });
     var allEds = Array.from(new Set(voting.r.map(function(r) { return r[0]; }))).sort(function(a, b) { return a - b; });
 
     var edResults = [];
@@ -58,7 +85,7 @@ export default function ValidationPage() {
           var dbPts = entry[5] || 0;
           var place = entry[4];
           // Find nation index
-          var ni = nn.indexOf(nat);
+          var ni = findNationIdx(nat, nn, nnLower);
           var votPts = ni >= 0 ? (votingTotals[ni] || 0) : -1;
           totalChecked++;
 
@@ -67,7 +94,7 @@ export default function ValidationPage() {
             edMismatches.push({
               edition: edNum, sub: SUB_LABELS[subCode], nation: nat, place: place,
               dbPts: dbPts, votPts: 0, diff: dbPts,
-              reason: "Nation not in voting data"
+              reason: "Nation not in voting data" + (NAME_ALIASES[nat] ? " (alias tried: " + NAME_ALIASES[nat] + ")" : "")
             });
             totalMismatches++;
           } else if (Math.abs(dbPts - votPts) > 0.5) {

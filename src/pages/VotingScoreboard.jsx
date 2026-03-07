@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { loadData } from '../data/loader';
-import { Loader } from '../components/Shared';
+import { Loader, useRosterStatus, RosterFilter, filterByRoster } from '../components/Shared';
 
 var SUB_SHORT = { 0: "GF", 1: "SF1", 2: "SF2", 3: "WL", 4: "R1", 5: "R2" };
 
@@ -103,6 +103,8 @@ export default function VotingScoreboard() {
   var [brkEdFrom, setBrkEdFrom] = useState(null);
   var [brkEdTo, setBrkEdTo] = useState(null);
   var [secNations, setSecNations] = useState([]);
+  var [rosterFilter, setRosterFilter] = useState("all");
+  var rosterMap = useRosterStatus();
 
   useEffect(function() {
     Promise.all([loadData("voting"), loadData("editions")]).then(function(arr) {
@@ -233,6 +235,9 @@ export default function VotingScoreboard() {
 
   var sq = searchQ.toLowerCase().trim();
   var sortedNations = nn.slice().map(function(n, i) { return [n, i]; }).sort(function(a, b) { return a[0].localeCompare(b[0]); });
+  // Filter by roster type
+  var rAllowed = filterByRoster(nn, rosterMap, rosterFilter);
+  var filteredNations = rAllowed ? sortedNations.filter(function(p) { return rAllowed.has(p[0]); }) : sortedNations;
   var iStyle = { width: 60, padding: "6px 8px", borderRadius: 6, fontSize: 13, textAlign: "center", background: "var(--input-bg)", border: "1px solid var(--border-08)", color: "var(--text)" };
   var secNationNames = secNations.map(function(i) { return nn[i]; }).filter(Boolean);
 
@@ -361,13 +366,13 @@ export default function VotingScoreboard() {
               <select value={selNation != null ? selNation : ""} onChange={function(e) { setSelNation(e.target.value ? Number(e.target.value) : null); setExpandAll(false); setSecNations([]); }}
                 style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 600, background: "var(--input-bg)", border: "1px solid var(--border-10)", color: "var(--blue)", cursor: "pointer", minWidth: 200 }}>
                 <option value="">Choose...</option>
-                {sortedNations.map(function(pair) {
+                {filteredNations.map(function(pair) {
                   return <option key={pair[1]} value={pair[1]} style={{ background: "var(--dropdown-bg)", color: "var(--text)" }}>{pair[0]}</option>;
                 })}
               </select>
             </div>
             <MultiNationSelect
-              nations={sortedNations}
+              nations={filteredNations}
               selected={secNations}
               onChange={function(v) { setSecNations(v); setExpandAll(false); }}
               label={"Filter " + (view === "received" ? "From" : "To") + " Nation(s)"}
@@ -390,6 +395,7 @@ export default function VotingScoreboard() {
                 {selCats.length > 0 && <button className="xb" onClick={function() { setSelCats([]); }} style={{ fontSize: 11, padding: "3px 8px" }}>All</button>}
               </div>
             </div>
+            <RosterFilter value={rosterFilter} onChange={function(v) { setRosterFilter(v); setSelNation(null); setSecNations([]); }} />
           </div>
 
           {selNation != null && breakdown && (function() {
