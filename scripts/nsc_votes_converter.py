@@ -84,7 +84,7 @@ META_COLS = {
     "# voters", "#voters", "voters", "no. of voters", "12s", "10s", "8s",
     "6 points", "7", "values ok", "count ok", "sum ok",
     "valid", "entries", "draw res", "curr voter",
-    "waiting list jury", "waiting list jury points",
+    "waiting list jury points",
     "rank tiebreak", "tiebreaker f", "tie-break", "tie break",
     "higher score", "bonus stars",
 }
